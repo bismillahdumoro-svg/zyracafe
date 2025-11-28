@@ -1,0 +1,42 @@
+═══════════════════════════════════════════════════════════════
+🚀 DEPLOY KE GOOGLE CLOUD - QUICK CHECKLIST
+═══════════════════════════════════════════════════════════════
+
+1️⃣ INSTALL GOOGLE CLOUD CLI
+   ➜ macOS:    brew install google-cloud-sdk
+   ➜ Linux:    curl https://sdk.cloud.google.com | bash
+   ➜ Windows:  https://dl.google.com/dl/cloudsdk/channels/rapid/GoogleCloudSDKInstaller.exe
+   ➜ Test:     gcloud --version
+
+2️⃣ LOGIN
+   ➜ gcloud auth login
+   ➜ Pick Google account → Allow
+
+3️⃣ CREATE PROJECT
+   ➜ Buka: https://console.cloud.google.com
+   ➜ Click "NEW PROJECT" → Name: "pos-billiard-app"
+   ➜ COPY PROJECT ID (format: pos-billiard-app-XXXXX)
+
+4️⃣ SET PROJECT
+   ➜ gcloud config set project pos-billiard-app-XXXXX
+   ➜ gcloud config list (verify)
+
+5️⃣ BUILD
+   ➜ npm run build
+   ➜ Tunggu 1-2 menit
+
+6️⃣ DEPLOY!
+   ➜ gcloud app deploy app.yaml --no-promote
+   ➜ Confirm: Y + Enter
+   ➜ Tunggu 2-3 menit
+
+7️⃣ GET URL
+   ➜ gcloud app describe
+   ➜ Cari "default_hostname"
+   ➜ URL: https://pos-billiard-app-XXXXX.appspot.com
+
+✅ SELESAI! Share URL ke team!
+
+═══════════════════════════════════════════════════════════════
+File: DEPLOY_SIMPLE.md  (untuk detail lengkap)
+═══════════════════════════════════════════════════════════════

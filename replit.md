@@ -266,7 +266,7 @@ Click "Publish" di Replit dashboard
 ✅ Auto-scaling
 ✅ Free tier: 28 instance-hours/day
 ✅ Backups tetap running
-ℹ️ See DEPLOY_GCLOUD.md untuk detailed guide
+ℹ️ Lihat: DEPLOY_SIMPLE.md (paling mudah) atau DEPLOY_VISUAL_GUIDE.md (step-by-step)
 ```
 
 ### Option 3: Render / Railway (EASY ALTERNATIVE)
