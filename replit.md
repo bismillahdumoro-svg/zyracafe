@@ -14,6 +14,13 @@ Modern POS system with automatic billiard rental tracking, full offline-first PW
 - ✅ Role-based access (Cashier & Admin)
 - ✅ Payment methods: Tunai (Cash) & QRIS only
 
+### Smart Report Access Control ✅ NEW!
+- ✅ **Kasir Panel**: Shows ONLY current shift sales data
+- ✅ **When shift changes**: Laporan penjualan shows empty (kosong)
+- ✅ **History Tab**: ALL kasirs see 7 AM - 7 AM window (24hr rolling)
+- ✅ **Admin Portal**: Can see ALL shifts + ALL transactions anytime
+- ✅ Auto-filtering by shift + time window
+
 ### Shift Close Report ✅ NEW!
 - ✅ Detailed recap when kasir ends shift
 - ✅ **Billiard income separated** - show earnings from billiard rentals
@@ -124,11 +131,16 @@ Billiard: 85% | Cafe: 15%
 - Detects billiard items by product name containing "MEJA"
 - Automatically splits cafe items (non-MEJA)
 
-## 📋 Files Modified
+## 📋 Files Modified (Latest)
 
-- `server/routes.ts` - Added `/api/shifts/:id/summary` endpoint
-- `client/src/components/ShiftCloseReport.tsx` - NEW report component
-- `client/src/components/ShiftManagement.tsx` - Added report flow + buttons
+### Nov 28 - Smart Report Access Control
+- `client/src/components/CashierDashboard.tsx` - Added smart transaction filtering:
+  - `shiftTransactions` - Only current active shift
+  - `historyTransactions` - All transactions in 7 AM to 7 AM window
+  - Empty message when no active shift for kasir
+- `server/routes.ts` - `/api/shifts/:id/summary` now includes expenses + finalTotal
+- `client/src/components/ShiftCloseReport.tsx` - Enhanced with expenses breakdown + WhatsApp share
+- `client/src/components/ShiftManagement.tsx` - Updated ShiftSummary interface
 
 ## 🚀 Next Steps
 
@@ -147,7 +159,9 @@ Billiard: 85% | Cafe: 15%
 
 **App is PRODUCTION READY!** 🚀
 - Shift close report dengan breakdown billiard vs cafe
+- Smart report access: Kasir lihat shift aktif, History 7AM-7AM untuk semua
 - Full offline-first PWA
 - Keep-alive untuk Replit URL
-- Session persistence
+- Session persistence (tetap login saat app ditutup)
 - Static build ready untuk distribusi
+- WhatsApp share + Print functionality

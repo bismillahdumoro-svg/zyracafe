@@ -104,11 +104,28 @@ export function CashierDashboard({
     return () => clearInterval(interval);
   }, []);
 
-  // Show transactions from last 24 hours (for cashier audit)
+  // Show transactions ONLY from current active shift for kasir
   const shiftTransactions = useMemo(() => {
+    if (!transactions || !currentShift) return [];
+    // Only show transactions from current active shift
+    return transactions.filter((t) => t.shiftId === currentShift.id);
+  }, [transactions, currentShift]);
+
+  // Show history transactions from 7 AM to 7 AM (last 24 hours)
+  const historyTransactions = useMemo(() => {
     if (!transactions) return [];
-    // Already filtered in App.tsx to show only last 24 hours
-    return transactions;
+    const now = new Date();
+    const today7am = new Date(now);
+    today7am.setHours(7, 0, 0, 0);
+    
+    // If current time is before 7 AM, history window is from yesterday 7 AM to today 7 AM
+    const startWindow = now.getHours() < 7 ? new Date(today7am.getTime() - 24 * 60 * 60 * 1000) : today7am;
+    const endWindow = new Date(startWindow.getTime() + 24 * 60 * 60 * 1000);
+    
+    return transactions.filter((t) => {
+      const txDate = new Date(t.createdAt);
+      return txDate >= startWindow && txDate <= endWindow;
+    });
   }, [transactions]);
 
   const shiftSales = useMemo(() => {
@@ -663,9 +680,9 @@ export function CashierDashboard({
             {activeTab === "history" && (
               <div className="flex-1 overflow-y-auto">
                 <div className="p-2">
-                  {shiftTransactions.length === 0 ? (
+                  {historyTransactions.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground text-sm">
-                      Belum ada transaksi
+                      Belum ada transaksi dalam periode 7 Pagi - 7 Pagi
                     </div>
                   ) : (
                     <div className="space-y-1">
@@ -679,7 +696,7 @@ export function CashierDashboard({
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {shiftTransactions.map((trx) => (
+                          {historyTransactions.map((trx) => (
                             <TableRow 
                               key={trx.id} 
                               data-testid={`shift-transaction-row-${trx.id}`} 
@@ -714,22 +731,29 @@ export function CashierDashboard({
             {activeTab === "report" && (
               <div className="flex-1 overflow-y-auto">
                 <div className="p-2 space-y-2">
-                  <div className="grid grid-cols-3 gap-2">
-                    <Card className="p-2">
-                      <div className="text-xs text-muted-foreground">Total Penjualan</div>
-                      <div className="text-sm font-bold text-primary">{formatCurrency(shiftSales)}</div>
-                    </Card>
-                    <Card className="p-2">
-                      <div className="text-xs text-muted-foreground">Transaksi</div>
-                      <div className="text-sm font-bold">{shiftTransactions.length}</div>
-                    </Card>
-                    <Card className="p-2">
-                      <div className="text-xs text-muted-foreground">Rata-rata</div>
-                      <div className="text-sm font-bold">{formatCurrency(averageTransaction)}</div>
-                    </Card>
-                  </div>
+                  {!currentShift ? (
+                    <div className="text-center py-8 text-muted-foreground text-sm">
+                      📊 Laporan penjualan kosong
+                      <div className="text-xs mt-2">Silakan mulai shift untuk melihat laporan</div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-3 gap-2">
+                        <Card className="p-2">
+                          <div className="text-xs text-muted-foreground">Total Penjualan</div>
+                          <div className="text-sm font-bold text-primary">{formatCurrency(shiftSales)}</div>
+                        </Card>
+                        <Card className="p-2">
+                          <div className="text-xs text-muted-foreground">Transaksi</div>
+                          <div className="text-sm font-bold">{shiftTransactions.length}</div>
+                        </Card>
+                        <Card className="p-2">
+                          <div className="text-xs text-muted-foreground">Rata-rata</div>
+                          <div className="text-sm font-bold">{formatCurrency(averageTransaction)}</div>
+                        </Card>
+                      </div>
 
-                  {currentShift && (
+                      {currentShift && (
                     <Card>
                       <CardHeader className="py-2 px-3">
                         <CardTitle className="text-sm">Ringkasan Shift</CardTitle>
@@ -761,6 +785,8 @@ export function CashierDashboard({
                         </div>
                       </CardContent>
                     </Card>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
