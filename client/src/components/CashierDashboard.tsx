@@ -165,7 +165,7 @@ export function CashierDashboard({
       // Billiard products come first
       return aIsBilliard ? -1 : bIsBilliard ? 1 : 0;
     });
-  }, [products, searchQuery, selectedCategory]);
+  }, [products, searchQuery, selectedCategory, categories]);
 
   const handleAddToCart = (product: Product) => {
     setCart((prev) => {
