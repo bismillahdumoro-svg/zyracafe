@@ -27,6 +27,9 @@ interface ShiftSummary {
   cafeIncome: number;
   cafeTransactions: number;
   totalTransactions: number;
+  expenses: Array<{ description: string; amount: number; recipientName: string }>;
+  totalExpenses: number;
+  finalTotal: number;
 }
 
 export function ShiftManagement({
