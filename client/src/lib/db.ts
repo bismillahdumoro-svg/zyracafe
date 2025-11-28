@@ -1,30 +1,56 @@
-// IndexedDB untuk offline data persistence
+// IndexedDB untuk offline-first data persistence
 const DB_NAME = "POS_Billiard_DB";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
+
+let dbInstance: IDBDatabase | null = null;
 
 export async function initDB() {
+  if (dbInstance) return dbInstance;
+
   return new Promise<IDBDatabase>((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION);
 
     request.onerror = () => reject(request.error);
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = () => {
+      dbInstance = request.result;
+      resolve(dbInstance);
+    };
 
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
 
-      // Billiard Rentals Store
-      if (!db.objectStoreNames.contains("billiardRentals")) {
-        const store = db.createObjectStore("billiardRentals", { keyPath: "id" });
-        store.createIndex("tableNumber", "tableNumber", { unique: false });
-        store.createIndex("status", "status", { unique: false });
-      }
+      // Main Data Stores (synced from server)
+      const stores = [
+        { name: "users", keyPath: "id" },
+        { name: "categories", keyPath: "id" },
+        { name: "products", keyPath: "id" },
+        { name: "shifts", keyPath: "id" },
+        { name: "transactions", keyPath: "id" },
+        { name: "transactionItems", keyPath: "id" },
+        { name: "billiardRentals", keyPath: "id" },
+        { name: "billiardTables", keyPath: "id" },
+        { name: "stockAdjustments", keyPath: "id" },
+        { name: "expenses", keyPath: "id" },
+        { name: "loans", keyPath: "id" },
+      ];
 
-      // Transactions Queue (untuk sync saat online)
-      if (!db.objectStoreNames.contains("transactionsQueue")) {
-        db.createObjectStore("transactionsQueue", { keyPath: "id", autoIncrement: true });
-      }
+      stores.forEach(({ name, keyPath }) => {
+        if (!db.objectStoreNames.contains(name)) {
+          const store = db.createObjectStore(name, { keyPath });
+          // Add indexes untuk common queries
+          if (name === "products") store.createIndex("categoryId", "categoryId", { unique: false });
+          if (name === "transactions") store.createIndex("shiftId", "shiftId", { unique: false });
+          if (name === "billiardRentals") store.createIndex("tableNumber", "tableNumber", { unique: false });
+        }
+      });
 
-      // Cart Items
+      // Metadata & Sync Queue
+      if (!db.objectStoreNames.contains("metadata")) {
+        db.createObjectStore("metadata", { keyPath: "key" });
+      }
+      if (!db.objectStoreNames.contains("offlineQueue")) {
+        db.createObjectStore("offlineQueue", { keyPath: "id", autoIncrement: true });
+      }
       if (!db.objectStoreNames.contains("cartItems")) {
         db.createObjectStore("cartItems", { keyPath: "id", autoIncrement: true });
       }
