@@ -63,7 +63,7 @@ export function CashierDashboard({
   const [showStartShiftDialog, setShowStartShiftDialog] = useState(false);
   const [showEndShiftDialog, setShowEndShiftDialog] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const [startingCash, setStartingCash] = useState("500000");
+  const [startingCash, setStartingCash] = useState("50000");
   const [activeTab, setActiveTab] = useState("products");
   const [showLoanDialog, setShowLoanDialog] = useState(false);
   const [loanForm, setLoanForm] = useState({ description: "", amount: "", recipientName: "" });
