@@ -92,6 +92,12 @@ Cafe: 15%
 
 ## 🔐 Credentials
 
+### Quick Login (Klik Lingkaran - No Password Needed)
+- 🔵 **Riki** - Langsung login, no password
+- 🔵 **Sherly** - Langsung login, no password  
+- 🔵 **RR** - Langsung login, no password
+
+### Manual Login
 - **Kasir**: kasir1 / kasir123 or kasir2 / kasir123
 - **Admin**: admin / admin123
 

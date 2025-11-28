@@ -7,6 +7,13 @@ import { ShoppingCart, Lock, User } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { UserRole } from "@/lib/types";
 
+interface QuickUser {
+  name: string;
+  username: string;
+  password: string;
+  initials: string;
+}
+
 interface LoginPageProps {
   onLogin: (username: string, password: string, role: UserRole) => void;
 }
@@ -17,12 +24,26 @@ export function LoginPage({ onLogin }: LoginPageProps) {
   const [role, setRole] = useState<UserRole>("cashier");
   const [isLoading, setIsLoading] = useState(false);
 
+  const quickUsers: QuickUser[] = [
+    { name: "Riki", username: "riki", password: "kasir123", initials: "RI" },
+    { name: "Sherly", username: "sherly", password: "kasir123", initials: "SH" },
+    { name: "RR", username: "rr", password: "kasir123", initials: "RR" },
+  ];
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     // todo: remove mock functionality
     setTimeout(() => {
       onLogin(username, password, role);
+      setIsLoading(false);
+    }, 500);
+  };
+
+  const handleQuickLogin = (user: QuickUser) => {
+    setIsLoading(true);
+    setTimeout(() => {
+      onLogin(user.username, user.password, "cashier");
       setIsLoading(false);
     }, 500);
   };
@@ -108,6 +129,26 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                 {isLoading ? "Memproses..." : "Masuk"}
               </Button>
             </form>
+
+            <div className="mt-6 pt-6 border-t">
+              <p className="text-center text-sm text-muted-foreground mb-4">Atau pilih kasir:</p>
+              <div className="grid grid-cols-3 gap-4">
+                {quickUsers.map((user) => (
+                  <button
+                    key={user.username}
+                    onClick={() => handleQuickLogin(user)}
+                    disabled={isLoading}
+                    className="flex flex-col items-center gap-2 group"
+                    data-testid={`button-quick-login-${user.username}`}
+                  >
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg group-hover:scale-110 transition-transform cursor-pointer shadow-md">
+                      {user.initials}
+                    </div>
+                    <span className="text-sm font-medium text-foreground">{user.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
