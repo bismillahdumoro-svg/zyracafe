@@ -2,7 +2,33 @@
 
 ## Overview
 
-A modern Point of Sale (POS) system built with React, Express, and PostgreSQL. The application provides comprehensive cashier and administrative functionality for retail operations, including transaction processing, inventory management, shift tracking, and sales reporting. The system supports role-based access control with separate interfaces for cashiers and administrators, with features for product management, stock adjustments, shift management, and detailed sales analytics.
+A modern Point of Sale (POS) system built with React, Express, and PostgreSQL. The application provides comprehensive cashier and administrative functionality for retail operations, including transaction processing, inventory management, shift tracking, sales reporting, and **automatic billiard rental timer management**. The system supports role-based access control with separate interfaces for cashiers and administrators, with features for product management, stock adjustments, shift management, and detailed sales analytics.
+
+## Recent Changes (Nov 28, 2025)
+
+### Billiard Rental Management System
+- ✅ **Fixed billiard product detection**: Changed from "BLR" SKU prefix to "MEJA" text in product name (actual SKUs are M001-M007)
+- ✅ **Implemented automatic rental tracking**: Upon checkout, billiard table rentals auto-create with timers
+- ✅ **Fixed timer countdown**: Real-time countdown persists across shifts using localStorage + optional database backup
+- ✅ **Fixed "Pas" (Exact Payment) button**: Auto-fills payment amount with cart total for faster checkout
+- ✅ **Fixed double-click product input issue**: Product name field now accepts single-click input
+- ✅ **Organized billiard display**: Tab "Sewa Billiard" shows meja 1-7 in consistent grid layout (2-3 columns)
+  - Grid always displays meja 1-7 in order (1,2,3 | 4,5,6 | 7)
+  - Available meja show green badge, active rentals show blue with countdown timer
+  - Countdown displays HH:MM:SS format
+  - Close button removes rental from active list
+- ✅ **Fixed product sorting**: Halaman Produk now displays meja 1-7 first in numeric order, followed by other products
+
+### Key Billiard Product Naming
+- Products named "MEJA 1", "MEJA 2", ..., "MEJA 7" are auto-detected as billiard rentals
+- SKUs: M001, M002, M003, M004, M005, M006, M007
+- Price: Rp 20.000 per jam
+- Upon purchase, rental records created with start time and countdown timer
+
+### Cashier Credentials
+- User: kasir1, Password: kasir123
+- User: kasir2, Password: kasir123
+- Admin: admin, Password: admin123
 
 ## User Preferences
 
@@ -24,6 +50,7 @@ Preferred communication style: Simple, everyday language.
 - TanStack Query (React Query) for server state management and caching
 - Local React state for UI interactions and form handling
 - Custom query client with credential-based API requests
+- localStorage for billiard rental timers (persists across browser/shift changes)
 
 **Routing**: 
 - Wouter for client-side routing
@@ -34,6 +61,7 @@ Preferred communication style: Simple, everyday language.
 - Admin: Sidebar navigation with 3-4 column grid layouts for data density
 - Cashier: Two-column split interface (products 60% | cart 40%) optimized for transaction speed
 - Responsive grid systems using Tailwind's responsive prefixes
+- Billiard tab: 2-3 column grid for consistent meja 1-7 ordering
 
 ### Backend Architecture
 
@@ -44,6 +72,7 @@ Preferred communication style: Simple, everyday language.
 - Session-based authentication without external auth providers
 - Simple role-based authorization (admin/cashier) via middleware
 - Express middleware for JSON parsing and request logging
+- Billiard rental endpoints: POST /api/billiard-rentals, GET /api/billiard-rentals
 
 **Development Tools**:
 - Vite integration for HMR and dev server
@@ -63,6 +92,7 @@ Preferred communication style: Simple, everyday language.
 - Transactions with line items for detailed sales tracking
 - Stock adjustments for inventory change logging
 - Expenses and loans for financial tracking per shift
+- **Billiard_rentals table**: Tracks table rentals with start time, duration, price, and status
 
 **Key Relationships**:
 - Products → Categories (many-to-one)
@@ -70,6 +100,7 @@ Preferred communication style: Simple, everyday language.
 - Transactions → Users (cashier, many-to-one)
 - Transaction Items → Products (many-to-one)
 - Stock Adjustments → Products (many-to-one)
+- Billiard_rentals → Shifts (many-to-one)
 
 **Data Patterns**:
 - UUID primary keys generated via PostgreSQL

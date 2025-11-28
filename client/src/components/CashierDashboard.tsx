@@ -135,16 +135,21 @@ export function CashierDashboard({
       return matchesSearch && matchesCategory;
     });
     
-    // Sort billiard products first when in "all" category
-    if (selectedCategory === "all") {
-      return filtered.sort((a, b) => {
-        const aIsBilliard = a.sku.startsWith("BLR") ? 0 : 1;
-        const bIsBilliard = b.sku.startsWith("BLR") ? 0 : 1;
-        return aIsBilliard - bIsBilliard;
-      });
-    }
-    
-    return filtered;
+    // Sort billiard products first (meja 1-7), then others
+    return filtered.sort((a, b) => {
+      const aIsBilliard = a.name.toUpperCase().includes("MEJA");
+      const bIsBilliard = b.name.toUpperCase().includes("MEJA");
+      
+      // If both are billiard, sort by table number
+      if (aIsBilliard && bIsBilliard) {
+        const aNum = parseInt(a.name.split("MEJA ")[1]?.split(" ")[0] || "999");
+        const bNum = parseInt(b.name.split("MEJA ")[1]?.split(" ")[0] || "999");
+        return aNum - bNum;
+      }
+      
+      // Billiard products come first
+      return aIsBilliard ? -1 : bIsBilliard ? 1 : 0;
+    });
   }, [products, searchQuery, selectedCategory]);
 
   const handleAddToCart = (product: Product) => {
@@ -476,13 +481,24 @@ export function CashierDashboard({
                       Tidak ada produk ditemukan
                     </div>
                   ) : (
-                    filteredProducts.map((product) => (
-                      <ProductCard
-                        key={product.id}
-                        product={product}
-                        onAddToCart={handleAddToCart}
-                      />
-                    ))
+                    [...filteredProducts]
+                      .sort((a, b) => {
+                        const aIsBilliard = a.name.toUpperCase().includes("MEJA");
+                        const bIsBilliard = b.name.toUpperCase().includes("MEJA");
+                        if (aIsBilliard && bIsBilliard) {
+                          const aNum = parseInt(a.name.split("MEJA ")[1]?.split(" ")[0] || "999");
+                          const bNum = parseInt(b.name.split("MEJA ")[1]?.split(" ")[0] || "999");
+                          return aNum - bNum;
+                        }
+                        return aIsBilliard ? -1 : bIsBilliard ? 1 : 0;
+                      })
+                      .map((product) => (
+                        <ProductCard
+                          key={product.id}
+                          product={product}
+                          onAddToCart={handleAddToCart}
+                        />
+                      ))
                   )}
                 </div>
               </div>
