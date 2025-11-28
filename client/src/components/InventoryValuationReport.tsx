@@ -14,10 +14,25 @@ interface InventoryValuationReportProps {
 }
 
 export function InventoryValuationReport({ products, transactions = [], transactionItems = [], stockAdjustments = [] }: InventoryValuationReportProps) {
-  // Hitung valuasi stok (exclude produk billiard/sewa)
+  // Hitung valuasi stok (exclude produk billiard/sewa dan minuman)
   const inventory = useMemo(() => {
     return products
-      .filter((product) => !product.sku.startsWith("BLR")) // Exclude billiard rentals
+      .filter((product) => {
+        // Exclude billiard rentals
+        if (product.sku.startsWith("BLR")) return false;
+        
+        // Exclude specific items: meja billiard, esbatu, esteh, kopi cangkir
+        const excludeItems = ["MEJA", "esbatu", "esteh", "kopi cangkir"];
+        const productNameLower = product.name.toLowerCase();
+        
+        for (const item of excludeItems) {
+          if (productNameLower.includes(item.toLowerCase())) {
+            return false;
+          }
+        }
+        
+        return true;
+      })
       .map((product) => ({
         ...product,
         valuasi: product.stock * product.price,
