@@ -396,6 +396,31 @@ function AppContent() {
     deleteUserMutation.mutate(id);
   };
 
+  const changePasswordMutation = useMutation({
+    mutationFn: async ({ id, oldPassword, newPassword }: { id: string; oldPassword: string; newPassword: string }) => {
+      const res = await apiRequest("PUT", `/api/users/${id}/change-password`, { oldPassword, newPassword });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Password berhasil diubah" });
+    },
+    onError: (error: Error) => {
+      throw error;
+    },
+  });
+
+  const handleChangePassword = async (id: string, oldPassword: string, newPassword: string) => {
+    return new Promise((resolve, reject) => {
+      changePasswordMutation.mutate(
+        { id, oldPassword, newPassword },
+        {
+          onSuccess: () => resolve(undefined),
+          onError: (error: Error) => reject(error),
+        }
+      );
+    });
+  };
+
   const addLoanMutation = useMutation({
     mutationFn: async (loanData: { shiftId: string; description: string; amount: number; recipientName: string }) => {
       const res = await apiRequest("POST", "/api/loans", loanData);
@@ -627,6 +652,7 @@ function AppContent() {
                   onAddUser={handleAddUser}
                   onUpdateUser={handleUpdateUser}
                   onDeleteUser={handleDeleteUser}
+                  onChangePassword={handleChangePassword}
                 />
               </Route>
               <Route path="/">

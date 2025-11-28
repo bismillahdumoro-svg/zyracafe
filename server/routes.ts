@@ -128,6 +128,39 @@ export async function registerRoutes(
     }
   });
 
+  // Change password endpoint
+  const changePasswordSchema = z.object({
+    oldPassword: z.string().min(1),
+    newPassword: z.string().min(1),
+  });
+
+  app.put("/api/users/:id/change-password", async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { oldPassword, newPassword } = changePasswordSchema.parse(req.body);
+      
+      const user = await db.query.users.findFirst({ where: (users, { eq }) => eq(users.id, id) });
+      
+      if (!user) {
+        return res.status(404).json({ message: "Pengguna tidak ditemukan" });
+      }
+      
+      if (user.password !== oldPassword) {
+        return res.status(401).json({ message: "Password lama tidak sesuai" });
+      }
+      
+      const updatedUser = await storage.updateUser(id, { password: newPassword });
+      
+      if (!updatedUser) {
+        return res.status(500).json({ message: "Gagal memperbarui password" });
+      }
+      
+      res.json({ success: true, message: "Password berhasil diubah" });
+    } catch (error) {
+      res.status(400).json({ message: "Gagal mengubah password" });
+    }
+  });
+
   // ============ CATEGORY ROUTES ============
   app.get("/api/categories", async (req: Request, res: Response) => {
     try {

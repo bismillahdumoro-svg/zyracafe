@@ -9,14 +9,16 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Search, Pencil, Trash2, UserCircle } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, UserCircle, Lock } from "lucide-react";
 import { User, UserRole } from "@/lib/types";
+import { AlertCircle } from "lucide-react";
 
 interface UserManagementProps {
   users: User[];
   onAddUser: (user: Omit<User, "id">) => void;
   onUpdateUser: (id: string, user: Partial<User>) => void;
   onDeleteUser: (id: string) => void;
+  onChangePassword?: (id: string, oldPassword: string, newPassword: string) => Promise<void>;
 }
 
 export function UserManagement({
@@ -24,11 +26,13 @@ export function UserManagement({
   onAddUser,
   onUpdateUser,
   onDeleteUser,
+  onChangePassword,
 }: UserManagementProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showChangePasswordDialog, setShowChangePasswordDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -36,6 +40,13 @@ export function UserManagement({
     role: "cashier" as UserRole,
     password: "",
   });
+  const [passwordForm, setPasswordForm] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
 
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -85,6 +96,41 @@ export function UserManagement({
       onDeleteUser(selectedUser.id);
       setShowDeleteDialog(false);
       setSelectedUser(null);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    setPasswordError("");
+    setPasswordSuccess(false);
+
+    if (!passwordForm.newPassword) {
+      setPasswordError("Password baru tidak boleh kosong");
+      return;
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError("Password baru dan konfirmasi tidak sesuai");
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 3) {
+      setPasswordError("Password minimal 3 karakter");
+      return;
+    }
+
+    try {
+      if (onChangePassword && selectedUser) {
+        await onChangePassword(selectedUser.id, passwordForm.oldPassword, passwordForm.newPassword);
+        setPasswordSuccess(true);
+        setTimeout(() => {
+          setShowChangePasswordDialog(false);
+          setPasswordForm({ oldPassword: "", newPassword: "", confirmPassword: "" });
+          setPasswordSuccess(false);
+          setSelectedUser(null);
+        }, 1500);
+      }
+    } catch (error: any) {
+      setPasswordError(error.message || "Gagal mengubah password");
     }
   };
 
@@ -203,6 +249,15 @@ export function UserManagement({
                         <Button
                           size="icon"
                           variant="ghost"
+                          onClick={() => { setSelectedUser(user); setPasswordForm({ oldPassword: "", newPassword: "", confirmPassword: "" }); setShowChangePasswordDialog(true); }}
+                          title="Ganti Password"
+                          data-testid={`button-change-password-${user.id}`}
+                        >
+                          <Lock className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
                           onClick={() => handleEdit(user)}
                           data-testid={`button-edit-user-${user.id}`}
                         >
@@ -263,6 +318,79 @@ export function UserManagement({
             </Button>
             <Button onClick={handleUpdate} data-testid="button-update-user">
               Simpan Perubahan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showChangePasswordDialog} onOpenChange={setShowChangePasswordDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Ganti Password</DialogTitle>
+            <DialogDescription>
+              Ubah password untuk pengguna "{selectedUser?.name}"
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {passwordError && (
+              <div className="flex items-center gap-2 p-3 bg-destructive/10 text-destructive rounded-md">
+                <AlertCircle className="h-4 w-4" />
+                <span className="text-sm">{passwordError}</span>
+              </div>
+            )}
+            {passwordSuccess && (
+              <div className="flex items-center gap-2 p-3 bg-green-500/10 text-green-600 rounded-md">
+                <span className="text-sm">✓ Password berhasil diubah</span>
+              </div>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="old-password">Password Lama</Label>
+              <Input
+                id="old-password"
+                type="password"
+                value={passwordForm.oldPassword}
+                onChange={(e) => setPasswordForm({ ...passwordForm, oldPassword: e.target.value })}
+                placeholder="Masukkan password lama"
+                data-testid="input-old-password"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-password">Password Baru</Label>
+              <Input
+                id="new-password"
+                type="password"
+                value={passwordForm.newPassword}
+                onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                placeholder="Masukkan password baru"
+                data-testid="input-new-password"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Konfirmasi Password Baru</Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                value={passwordForm.confirmPassword}
+                onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                placeholder="Konfirmasi password baru"
+                data-testid="input-confirm-password"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowChangePasswordDialog(false)}
+              disabled={passwordSuccess}
+            >
+              Batal
+            </Button>
+            <Button 
+              onClick={handleChangePassword} 
+              disabled={passwordSuccess}
+              data-testid="button-save-password"
+            >
+              Ubah Password
             </Button>
           </DialogFooter>
         </DialogContent>

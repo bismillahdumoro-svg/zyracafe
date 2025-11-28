@@ -30,6 +30,14 @@ Modern POS system with automatic billiard rental tracking, full offline-first PW
 - ✅ Print functionality for receipt
 - ✅ Beautiful visual charts/bars
 
+### User Management - Change Password ✅ NEW!
+- ✅ Lock icon button di setiap pengguna
+- ✅ Dialog "Ganti Password" dengan validasi
+- ✅ Password lama harus cocok sebelum bisa ubah
+- ✅ Konfirmasi password baru (match validation)
+- ✅ Success/error messages yang jelas
+- ✅ Admin bisa ubah password untuk semua kasir
+
 ### Progressive Web App - OFFLINE-FIRST ✅
 - ✅ Install on home screen (iOS & Android)
 - ✅ Full database sync - 28+ records on device
@@ -133,6 +141,21 @@ Billiard: 85% | Cafe: 15%
 
 ## 📋 Files Modified (Latest)
 
+### Nov 28 - Change Password Feature ✅ NEW!
+- `server/routes.ts` - Added endpoint: `PUT /api/users/:id/change-password`
+  - Validates old password matches
+  - Updates to new password securely
+  - Error handling dengan pesan jelas
+- `client/src/components/UserManagement.tsx` - Added change password dialog:
+  - Lock icon button di setiap row user
+  - Dialog dengan 3 fields: password lama, baru, confirm
+  - Real-time validation dan error messages
+  - Success notification
+- `client/src/App.tsx` - Added mutation + handler:
+  - `changePasswordMutation` untuk API call
+  - `handleChangePassword` function
+  - Connected ke UserManagement component
+
 ### Nov 28 - Smart Report Access Control
 - `client/src/components/CashierDashboard.tsx` - Added smart transaction filtering:
   - `shiftTransactions` - Only current active shift
@@ -158,10 +181,11 @@ Billiard: 85% | Cafe: 15%
 ---
 
 **App is PRODUCTION READY!** 🚀
-- Shift close report dengan breakdown billiard vs cafe
-- Smart report access: Kasir lihat shift aktif, History 7AM-7AM untuk semua
-- Full offline-first PWA
-- Keep-alive untuk Replit URL
-- Session persistence (tetap login saat app ditutup)
-- Static build ready untuk distribusi
-- WhatsApp share + Print functionality
+- ✅ **Ganti Password** - Admin bisa ubah password kasir
+- ✅ Shift close report dengan breakdown billiard vs cafe
+- ✅ Smart report access: Kasir lihat shift aktif, History 7AM-7AM untuk semua
+- ✅ Full offline-first PWA
+- ✅ Keep-alive untuk Replit URL
+- ✅ Session persistence (tetap login saat app ditutup)
+- ✅ Static build ready untuk distribusi
+- ✅ WhatsApp share + Print functionality
