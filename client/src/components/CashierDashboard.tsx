@@ -541,42 +541,61 @@ export function CashierDashboard({
 
             {activeTab === "billiard" && (
               <div className="flex-1 overflow-y-auto">
-                <div className="p-3 space-y-3">
-                  {billiardRentals.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground text-sm">
-                      Tidak ada sewa billiard aktif
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {billiardRentals.map((rental) => {
-                        const hours = Math.floor(rental.remainingSeconds / 3600);
-                        const minutes = Math.floor((rental.remainingSeconds % 3600) / 60);
-                        const seconds = rental.remainingSeconds % 60;
-                        return (
-                          <Card key={rental.id} data-testid={`billiard-rental-${rental.id}`} className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
-                            <CardContent className="p-3 space-y-2">
-                              <div className="flex justify-between items-start">
-                                <div>
-                                  <h4 className="font-bold text-lg">Meja #{rental.tableNumber}</h4>
-                                  <p className="text-xs text-muted-foreground">{formatCurrency(rental.totalPrice)} • {rental.hoursRented} jam</p>
-                                </div>
-                                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => setBilliardRentals((prev) => prev.filter((r) => r.id !== rental.id))} data-testid={`button-close-rental-${rental.id}`}>
-                                  <X className="h-3 w-3" />
+                <div className="p-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {[1, 2, 3, 4, 5, 6, 7].map((tableNum) => {
+                      const rental = billiardRentals.find((r) => r.tableNumber === tableNum.toString());
+                      const hours = rental ? Math.floor(rental.remainingSeconds / 3600) : 0;
+                      const minutes = rental ? Math.floor((rental.remainingSeconds % 3600) / 60) : 0;
+                      const seconds = rental ? rental.remainingSeconds % 60 : 0;
+                      
+                      return (
+                        <Card 
+                          key={`meja-${tableNum}`} 
+                          data-testid={`billiard-table-${tableNum}`}
+                          className={rental ? "bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800" : "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800"}
+                        >
+                          <CardContent className="p-4 space-y-3">
+                            <div className="flex justify-between items-start">
+                              <h4 className="font-bold text-xl">MEJA {tableNum}</h4>
+                              {rental && (
+                                <Button 
+                                  size="icon" 
+                                  variant="ghost" 
+                                  className="h-6 w-6 text-destructive" 
+                                  onClick={() => setBilliardRentals((prev) => prev.filter((r) => r.id !== rental.id))} 
+                                  data-testid={`button-close-rental-${rental.id}`}
+                                >
+                                  <X className="h-4 w-4" />
                                 </Button>
-                              </div>
-                              <div className="bg-white dark:bg-slate-900 p-3 rounded text-center">
-                                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 font-mono">
-                                  {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+                              )}
+                            </div>
+                            
+                            {rental ? (
+                              <>
+                                <div className="bg-white dark:bg-slate-900 p-3 rounded text-center">
+                                  <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 font-mono">
+                                    {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground mt-1">Sisa waktu</div>
                                 </div>
-                                <div className="text-xs text-muted-foreground mt-1">Sisa waktu</div>
+                                <div className="text-xs text-muted-foreground">
+                                  <p>{rental.hoursRented} jam • {formatCurrency(rental.totalPrice)}</p>
+                                  <p>Mulai: {formatDateTime(new Date(rental.startTime))}</p>
+                                </div>
+                              </>
+                            ) : (
+                              <div className="text-center py-6">
+                                <Badge variant="outline" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
+                                  Tersedia
+                                </Badge>
                               </div>
-                              <div className="text-xs text-muted-foreground text-center">Mulai: {formatDateTime(new Date(rental.startTime))}</div>
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  )}
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             )}
