@@ -1,0 +1,55 @@
+~/workspace$ # Build React app
+npm run build
+
+# Lihat hasil
+ls -la dist/
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v5.4.20 building for production...
+transforming (4) src/App.tsx
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+✓ 2541 modules transformed.
+../dist/public/index.html                   2.39 kB │ gzip:   0.91 kB
+../dist/public/assets/index-Bg-vuh8E.css   74.34 kB │ gzip:  12.02 kB
+../dist/public/assets/index-BCrEsOfb.js   863.54 kB │ gzip: 242.89 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 15.25s
+building server...
+
+  dist/index.cjs  1.1mb ⚠️
+
+⚡ Done in 343ms
+total 1180
+drwxr-xr-x 1 runner runner      30 Nov 28 08:15 .
+drwxr-xr-x 1 runner runner     856 Nov 28 08:15 ..
+-rw-r--r-- 1 runner runner 1201059 Nov 28 08:15 index.cjs
+drwxr-xr-x 1 runner runner      88 Nov 28 08:15 public
+~/workspace$ npm run build
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v5.4.20 building for production...
+transforming (5) ../node_modules/wouter/esm/index.js
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+✓ 2541 modules transformed.
+../dist/public/index.html                   2.39 kB │ gzip:   0.91 kB
+../dist/public/assets/index-Bg-vuh8E.css   74.34 kB │ gzip:  12.02 kB
+../dist/public/assets/index-BCrEsOfb.js   863.54 kB │ gzip: 242.89 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 16.43s
+building server...
+
+  dist/index.cjs  1.1mb ⚠️

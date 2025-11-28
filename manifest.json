@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "POS Billiard Cafe",
+  "version": "1.0.0",
+  "description": "Aplikasi Point of Sale untuk Billiard & Cafe - Bekerja Offline",
+  "permissions": [
+    "storage",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "POS System"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}

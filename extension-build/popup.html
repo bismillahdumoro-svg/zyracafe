@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POS System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
+    body { padding: 20px; }
+    .container { max-width: 1200px; }
+    .header { background: #2c3e50; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    .header h1 { font-size: 24px; margin-bottom: 5px; }
+    .header p { font-size: 14px; opacity: 0.9; }
+    .login-form { background: white; padding: 30px; border-radius: 8px; max-width: 400px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: 500; margin-bottom: 5px; color: #333; }
+    .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+    .form-group input:focus { outline: none; border-color: #2c3e50; }
+    .btn { background: #2c3e50; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500; width: 100%; }
+    .btn:hover { background: #1a252f; }
+    .message { padding: 15px; border-radius: 4px; margin-bottom: 15px; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+    .dashboard { display: none; }
+    .dashboard.active { display: block; }
+    .user-info { background: white; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+    .user-info strong { color: #2c3e50; }
+    .logout-btn { background: #dc3545; }
+    .logout-btn:hover { background: #c82333; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>POS Billiard Cafe</h1>
+      <p>Sistem Kasir Offline - Mode Chrome Extension</p>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm" class="login-form">
+      <h2 style="margin-bottom: 20px; color: #2c3e50; font-size: 18px;">Login</h2>
+      <div id="message"></div>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Username:</label>
+          <input type="text" id="username" placeholder="admin atau kasir1" required>
+        </div>
+        <div class="form-group">
+          <label>Password:</label>
+          <input type="password" id="password" required>
+        </div>
+        <button type="submit" class="btn">Login</button>
+      </form>
+      <p style="margin-top: 20px; font-size: 12px; color: #666;">
+        Default: admin/admin atau kasir1/kasir1
+      </p>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="dashboard">
+      <div class="user-info">
+        <p>User: <strong id="userName"></strong></p>
+        <p>Role: <strong id="userRole"></strong></p>
+        <button class="btn logout-btn" onclick="handleLogout()" style="max-width: 200px;">Logout</button>
+      </div>
+      <div style="text-align: center; padding: 40px; background: white; border-radius: 8px;">
+        <p style="font-size: 18px; color: #666;">Selamat datang! 👋</p>
+        <p style="color: #999; margin-top: 10px;">Aplikasi POS berjalan di mode offline.</p>
+        <p style="color: #999; font-size: 12px; margin-top: 20px;">React app loading...</p>
+        <div id="appContainer" style="margin-top: 20px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Default users
+    const DEFAULT_USERS = [
+      { id: '1', name: 'Admin Utama', username: 'admin', password: 'admin', role: 'admin' },
+      { id: '2', name: 'Kasir Satu', username: 'kasir1', password: 'kasir1', role: 'cashier' }
+    ];
+
+    let currentUser = null;
+
+    // Load user from storage on startup
+    window.addEventListener('load', () => {
+      chrome.storage.local.get(['currentUser'], (result) => {
+        if (result.currentUser) {
+          currentUser = result.currentUser;
+          showDashboard();
+        }
+      });
+    });
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const messageDiv = document.getElementById('message');
+
+      const user = DEFAULT_USERS.find(u => u.username === username && u.password === password);
+      
+      if (user) {
+        currentUser = user;
+        chrome.storage.local.set({ currentUser }, () => {
+          messageDiv.innerHTML = '<div class="message success">Login berhasil!</div>';
+          setTimeout(showDashboard, 500);
+        });
+      } else {
+        messageDiv.innerHTML = '<div class="message error">Username atau password salah!</div>';
+      }
+    }
+
+    function showDashboard() {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('dashboard').classList.add('active');
+      document.getElementById('userName').textContent = currentUser.name;
+      document.getElementById('userRole').textContent = currentUser.role === 'admin' ? 'Admin' : 'Kasir';
+      
+      // Load React app after login
+      loadReactApp();
+    }
+
+    function handleLogout() {
+      chrome.storage.local.remove(['currentUser'], () => {
+        currentUser = null;
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('dashboard').classList.remove('active');
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('message').innerHTML = '';
+      });
+    }
+
+    function loadReactApp() {
+      // Inject React app here
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = 'assets/index-BCrEsOfb.js';
+      document.body.appendChild(script);
+    }
+  </script>
+</body>
+</html>
