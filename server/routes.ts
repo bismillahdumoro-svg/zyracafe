@@ -624,7 +624,13 @@ export async function registerRoutes(
 
   // ============ RESTORE FROM GOOGLE DRIVE ============
   app.post("/api/restore-backup", async (req: Request, res: Response) => {
-    res.json({ message: "✅ Backup tersedia di Google Drive. Admin bisa download manual dan restore jika diperlukan" });
+    res.json({ 
+      message: "✅ Database & Code backup tersedia di Google Drive",
+      backups: {
+        database: "pos-backup-YYYY-MM-DD.json (setiap hari jam 2 AM)",
+        code: "pos-code-backup-YYYY-MM-DD.tar.gz (setiap hari jam 3 AM)"
+      }
+    });
   });
 
   // ============ SEED DATA ROUTE ============

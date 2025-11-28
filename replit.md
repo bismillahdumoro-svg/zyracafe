@@ -62,7 +62,14 @@ Modern POS system with automatic billiard rental tracking, full offline-first PW
 - ✅ Keeps temporary URL active 24/7
 - ✅ Prevents idle timeout
 
-### Google Drive Auto-Backup ✅ NEW!
+### Dual Backup System ✅ 
+- ✅ **Database backup** at 2 AM - All 11 tables (users, products, transactions, etc)
+- ✅ **Code backup** at 3 AM - Full source code (server, client, shared)
+- ✅ Both auto-run on server startup (1-2 menit delay)
+- ✅ Google Drive auto-cleanup di manage via dashboard
+- ✅ Compressed dengan Tar.gz (hemat space)
+
+### Google Drive Auto-Backup (Database)
 - ✅ **Daily automated backup** - Runs at 2 AM every day
 - ✅ **Full database export** - All 11 tables: users, products, categories, shifts, transactions, stock adjustments, expenses, loans, billiard rentals, billiard tables
 - ✅ **Google Drive integration** - Automatically uploads JSON backup files
@@ -160,6 +167,22 @@ Billiard: 85% | Cafe: 15%
 
 ## 📋 Files Modified (Latest)
 
+### Nov 28 - Automatic Code Backup to Google Drive ✅ NEW!
+- `server/code-backup.ts` - Created:
+  - Tar.gz compression untuk semua source files
+  - Automatically excludes: node_modules, dist, build, .env, .git
+  - Daily schedule at 3 AM (setelah data backup jam 2 AM)
+  - Uploads to Google Drive dengan automatic filename
+  - Cleanup backup file lokal setelah upload berhasil
+- `server/index.ts` - Modified:
+  - Import & initialize code backup scheduler
+  - Call `initializeCodeBackupSchedule()` on startup
+- `server/routes.ts` - Updated:
+  - `/api/restore-backup` endpoint info mencakup code backups
+- `package.json` - Added:
+  - `tar` package untuk compression
+  - NOW: Backup schedule = Database (2 AM) + Code (3 AM) DAILY
+
 ### Nov 28 - Offline-First Fallback & Service Worker Enhancement ✅ NEW!
 - `public/sw.js` - Created:
   - Cache-first strategy for all assets
@@ -226,12 +249,13 @@ Billiard: 85% | Cafe: 15%
 ## 🚀 Next Steps
 
 1. **Deploy to Production** - Click Publish in Replit dashboard
-2. **Share URL with team** - App works offline + keep-alive active
-3. **Check Google Drive** - First backup will run dalam 1 menit, daily at 2 AM
-4. **Test offline mode** - Close browser, open lagi = cache tetap ada
-5. **Test on iPad** - Install to home screen, full offline support
-6. **Admin Dashboard** - Click "Backup" button untuk lihat backup status
-7. **Graceful fallback** - Jika server down, app tetap bekerja dari cache
+2. **Check Google Drive backups:**
+   - 📊 Database backup: `pos-backup-YYYY-MM-DD.json` (2 AM)
+   - 📦 Code backup: `pos-code-backup-YYYY-MM-DD.tar.gz` (3 AM)
+3. **First backups run within 2 minutes** after server startup
+4. **Test offline mode** - Close browser = app pakai cache lokal
+5. **Admin Dashboard** - Click "Backup" untuk lihat backup status
+6. **Share URL with team** - Semua fitur offline-first ready!
 
 ## 📦 Distribution
 

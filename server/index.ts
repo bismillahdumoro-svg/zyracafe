@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { initializeBackupSchedule } from "./backup";
+import { initializeCodeBackupSchedule } from "./code-backup";
 
 const app = express();
 const httpServer = createServer(app);
@@ -63,8 +64,9 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
-  // Initialize Google Drive backup schedule
+  // Initialize Google Drive backup schedules
   initializeBackupSchedule();
+  initializeCodeBackupSchedule();
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
