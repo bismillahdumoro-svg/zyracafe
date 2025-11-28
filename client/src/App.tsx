@@ -26,21 +26,25 @@ import { saveSession, loadSession, clearSession, updateSessionShift } from "@/li
 import NotFound from "@/pages/not-found";
 
 function AppContent() {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [currentShift, setCurrentShift] = useState<Shift | null>(null);
+  // Lazy init: restore session IMMEDIATELY dari localStorage, bukan dalam useEffect
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    const stored = loadSession();
+    return stored?.user || null;
+  });
+  
+  const [currentShift, setCurrentShift] = useState<Shift | null>(() => {
+    const stored = loadSession();
+    return stored?.shift || null;
+  });
+  
   const { toast } = useToast();
 
-  // Restore session dari localStorage saat app load (fix minimize/lock issue)
+  // Update queries saat session di-restore
   useEffect(() => {
-    const stored = loadSession();
-    if (stored) {
-      setCurrentUser(stored.user);
-      if (stored.shift) {
-        setCurrentShift(stored.shift);
-      }
-      console.log("[App] Session restored dari localStorage");
+    if (currentUser) {
+      console.log("[App] Session loaded untuk", currentUser.username);
     }
-  }, []);
+  }, [currentUser]);
 
   const { data: products = [], isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],

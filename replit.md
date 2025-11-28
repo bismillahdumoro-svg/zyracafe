@@ -30,11 +30,12 @@ Modern POS system with automatic billiard rental tracking, full offline-first PW
 - ✅ Auto-update on new versions
 - ✅ Periodic sync every 5 minutes
 
-### Session Persistence ✅
+### Session Persistence ✅ FIXED!
 - ✅ Session saved to localStorage on login
-- ✅ Auto-restore when app wakes up
+- ✅ Auto-restore IMMEDIATELY saat app dibuka (bukan tunggu useEffect)
+- ✅ Tetap login saat app ditutup & dibuka lagi
 - ✅ Stays logged in across minimize/lock
-- ✅ 24-hour expiry for security
+- ✅ 24-hour expiry untuk security
 - ✅ Manual logout clears session
 
 ### Replit Temporary URL Keep-Alive ✅
