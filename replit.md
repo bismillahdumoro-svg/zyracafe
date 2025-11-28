@@ -1,7 +1,7 @@
 # POS Application - Billiard Rental Management System
 
 ## Overview (Nov 28, 2025) - ✅ COMPLETE PRODUCTION SYSTEM
-Modern POS system with automatic billiard rental tracking, full offline-first PWA with session persistence, keep-alive, AND **detailed shift close report** with billiard vs cafe income breakdown.
+Modern POS system with automatic billiard rental tracking, full offline-first PWA with session persistence, keep-alive, AND **detailed shift close report** with billiard vs cafe income breakdown. PLUS smart stock management with 30-day inventory analytics!
 
 ## ✅ COMPLETED FEATURES
 
@@ -58,6 +58,15 @@ Modern POS system with automatic billiard rental tracking, full offline-first PW
 - ✅ Auto-ping server every 10 minutes
 - ✅ Keeps temporary URL active 24/7
 - ✅ Prevents idle timeout
+
+### Stock Management & Analytics ✅ NEW!
+- ✅ **Filter Gudang**: Exclude billiard tables (MEJA), esbatu, esteh, kopi cangkir from warehouse valuation
+- ✅ **Informasi Penambahan Stok**: 30-day rolling analytics tab
+  - Total unit ditambahkan dalam 1 bulan
+  - Total nilai investasi stok
+  - Rata-rata penambahan per hari
+  - Top 5 produk dengan penambahan terbanyak
+  - Linked to revenue understanding
 
 ### Static Build Distribution ✅
 - ✅ Production build successful
@@ -141,7 +150,18 @@ Billiard: 85% | Cafe: 15%
 
 ## 📋 Files Modified (Latest)
 
-### Nov 28 - Change Password Feature ✅ NEW!
+### Nov 28 - Stock Management Analytics ✅ NEW!
+- `client/src/components/StockManagement.tsx` - Added:
+  - New tab: "Informasi Penambahan Stok" 
+  - Filter calculation for last 30 days additions
+  - Summary cards: total units, total value, avg/day, transaction count
+  - Table: top 5 products by addition value
+  - Uses `useMemo` for performance optimization
+- `client/src/components/InventoryValuationReport.tsx` - Enhanced:
+  - Filter warehouse items to exclude: MEJA, esbatu, esteh, kopi cangkir
+  - Only calculates actual warehouse stock value (not billiard/beverage equipment)
+
+### Nov 28 - Change Password Feature ✅
 - `server/routes.ts` - Added endpoint: `PUT /api/users/:id/change-password`
   - Validates old password matches
   - Updates to new password securely

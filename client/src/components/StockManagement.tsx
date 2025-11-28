@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Minus, Search, History } from "lucide-react";
+import { Plus, Minus, Search, History, TrendingUp } from "lucide-react";
+import { useMemo } from "react";
 import { Product, StockAdjustment } from "@/lib/types";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
 
@@ -59,6 +60,52 @@ export function StockManagement({
     .filter((p) => p.stock <= 10)
     .sort((a, b) => a.stock - b.stock);
 
+  // Calculate stock additions in last 30 days
+  const last30DaysInfo = useMemo(() => {
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    
+    const additionsLast30Days = adjustments
+      .filter((adj) => adj.adjustment > 0 && new Date(adj.createdAt) >= thirtyDaysAgo)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    
+    const totalUnitsAdded = additionsLast30Days.reduce((sum, adj) => sum + adj.adjustment, 0);
+    
+    // Calculate value based on product price
+    const totalValueAdded = additionsLast30Days.reduce((sum, adj) => {
+      const product = products.find(p => p.id === adj.productId);
+      return sum + (adj.adjustment * (product?.price || 0));
+    }, 0);
+    
+    // Group by product for top additions
+    const productAdditions = new Map<string, { productName: string; units: number; value: number }>();
+    additionsLast30Days.forEach((adj) => {
+      const product = products.find(p => p.id === adj.productId);
+      if (!product) return;
+      
+      const key = adj.productId;
+      const existing = productAdditions.get(key) || { productName: product.name, units: 0, value: 0 };
+      existing.units += adj.adjustment;
+      existing.value += adj.adjustment * product.price;
+      productAdditions.set(key, existing);
+    });
+    
+    const topAdditions = Array.from(productAdditions.values())
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 5);
+    
+    const daysInPeriod = 30;
+    const avgPerDay = totalUnitsAdded / daysInPeriod;
+    
+    return {
+      totalUnitsAdded,
+      totalValueAdded,
+      avgPerDay: avgPerDay.toFixed(1),
+      additionsCount: additionsLast30Days.length,
+      topAdditions,
+    };
+  }, [adjustments, products]);
+
   return (
     <div className="space-y-6">
       <div>
@@ -75,6 +122,7 @@ export function StockManagement({
               <Badge variant="destructive" className="ml-2">{lowStockProducts.length}</Badge>
             )}
           </TabsTrigger>
+          <TabsTrigger value="info" data-testid="tab-info">Informasi Penambahan</TabsTrigger>
           <TabsTrigger value="history" data-testid="tab-history">Riwayat</TabsTrigger>
         </TabsList>
 
@@ -204,6 +252,99 @@ export function StockManagement({
               </ScrollArea>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="info" className="mt-4">
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold mb-4">Informasi Penambahan Stok (30 Hari Terakhir)</h2>
+              
+              {/* Summary Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">Total Unit Ditambahkan</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{last30DaysInfo.totalUnitsAdded}</div>
+                    <p className="text-xs text-muted-foreground mt-1">unit dalam 30 hari</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">Total Nilai Penambahan</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{formatCurrency(last30DaysInfo.totalValueAdded)}</div>
+                    <p className="text-xs text-muted-foreground mt-1">investasi stok</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">Rata-rata Per Hari</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{last30DaysInfo.avgPerDay}</div>
+                    <p className="text-xs text-muted-foreground mt-1">unit/hari</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">Jumlah Transaksi</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{last30DaysInfo.additionsCount}</div>
+                    <p className="text-xs text-muted-foreground mt-1">penambahan stok</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Top Products Added */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Produk Dengan Penambahan Terbanyak
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <ScrollArea className="max-h-[400px]">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Produk</TableHead>
+                          <TableHead className="text-center">Unit Ditambahkan</TableHead>
+                          <TableHead className="text-right">Total Nilai</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {last30DaysInfo.topAdditions.length > 0 ? (
+                          last30DaysInfo.topAdditions.map((item, idx) => (
+                            <TableRow key={idx}>
+                              <TableCell className="font-medium">{item.productName}</TableCell>
+                              <TableCell className="text-center">
+                                <Badge variant="outline">{item.units}</Badge>
+                              </TableCell>
+                              <TableCell className="text-right font-semibold">{formatCurrency(item.value)}</TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
+                              Belum ada penambahan stok dalam 30 hari terakhir
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="history" className="mt-4">
