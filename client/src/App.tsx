@@ -22,12 +22,25 @@ import { BilliardManagement } from "@/components/BilliardManagement";
 import { InventoryValuationReport } from "@/components/InventoryValuationReport";
 import { User, UserRole, Product, Shift, Transaction, StockAdjustment, CartItem, Category, Loan, BilliardRental } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
+import { saveSession, loadSession, clearSession, updateSessionShift } from "@/lib/session";
 import NotFound from "@/pages/not-found";
 
 function AppContent() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [currentShift, setCurrentShift] = useState<Shift | null>(null);
   const { toast } = useToast();
+
+  // Restore session dari localStorage saat app load (fix minimize/lock issue)
+  useEffect(() => {
+    const stored = loadSession();
+    if (stored) {
+      setCurrentUser(stored.user);
+      if (stored.shift) {
+        setCurrentShift(stored.shift);
+      }
+      console.log("[App] Session restored dari localStorage");
+    }
+  }, []);
 
   const { data: products = [], isLoading: productsLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
@@ -77,13 +90,16 @@ function AppContent() {
     },
     onSuccess: (data) => {
       setCurrentUser(data.user);
-      if (data.activeShift) {
-        setCurrentShift({
-          ...data.activeShift,
-          startTime: new Date(data.activeShift.startTime),
-          endTime: data.activeShift.endTime ? new Date(data.activeShift.endTime) : undefined,
-        });
+      const shift = data.activeShift ? {
+        ...data.activeShift,
+        startTime: new Date(data.activeShift.startTime),
+        endTime: data.activeShift.endTime ? new Date(data.activeShift.endTime) : undefined,
+      } : null;
+      if (shift) {
+        setCurrentShift(shift);
       }
+      // Save session ke localStorage untuk persist across minimize/lock
+      saveSession(data.user, shift || null);
       queryClient.invalidateQueries();
       toast({ title: "Berhasil masuk", description: `Selamat datang, ${data.user.name}!` });
     },
@@ -99,6 +115,7 @@ function AppContent() {
   const handleLogout = () => {
     setCurrentUser(null);
     setCurrentShift(null);
+    clearSession(); // Clear session dari localStorage
     queryClient.clear();
     toast({ title: "Berhasil keluar" });
   };
@@ -119,6 +136,10 @@ function AppContent() {
         endTime: data.endTime ? new Date(data.endTime) : undefined,
       };
       setCurrentShift(shift);
+      // Update shift di session localStorage
+      if (currentUser) {
+        updateSessionShift(shift);
+      }
       queryClient.invalidateQueries({ queryKey: ["/api/shifts"] });
       toast({ title: "Shift dimulai", description: "Selamat bekerja!" });
     },

@@ -1,7 +1,7 @@
 # POS Application - Billiard Rental Management System
 
-## Overview (Nov 28, 2025) - ✅ TRUE OFFLINE-FIRST PWA
-Modern POS system with automatic billiard rental tracking, timer management, extension/renewal products, and **true offline-first Progressive Web App** that works 100% standalone on iPad even if Replit URL is deleted.
+## Overview (Nov 28, 2025) - ✅ PWA + SESSION PERSISTENCE + KEEP-ALIVE
+Modern POS system with automatic billiard rental tracking, timer management, extension/renewal products, and **offline-first Progressive Web App** with persistent sessions across minimize/lock.
 
 ## ✅ COMPLETED FEATURES
 
@@ -14,17 +14,25 @@ Modern POS system with automatic billiard rental tracking, timer management, ext
 - ✅ Category management (add/delete) with special "Perpanjangan" handling
 - ✅ Product visibility rules enforced at Cashier & Admin levels
 
-### Progressive Web App (PWA) - TRUE OFFLINE-FIRST
-- ✅ Install app on home screen (iOS & Android) - works standalone
-- ✅ **FULL DATABASE SYNC** - all products, categories, billiard data downloaded to device
-- ✅ Offline-first operations - reads from IndexedDB first, syncs when online
+### Progressive Web App (PWA) - OFFLINE-FIRST
+- ✅ Install app on home screen (iOS & Android)
+- ✅ Full database sync - all products, categories, billiard data downloaded to device
+- ✅ Offline-first operations - reads from IndexedDB first
 - ✅ Service Worker caching strategy with Workbox
-- ✅ IndexedDB local database with 12+ data stores
-- ✅ Auto-update service worker when new version deployed
+- ✅ IndexedDB for local data persistence (12+ stores)
+- ✅ Auto-update service worker when deployed
 - ✅ Periodic sync every 5 minutes (download latest data)
 - ✅ Offline queue - changes stored locally, sync when back online
 - ✅ Manifest.json with app icons and metadata
 - ✅ Mobile-optimized with PWA shortcuts
+
+### Session Persistence - STAYS LOGGED IN ✅ NEW!
+- ✅ Session saved to localStorage on login
+- ✅ Auto-restore session when app wakes up (minimize/lock fix)
+- ✅ Shift data persists across app backgrounding
+- ✅ 24-hour session expiry for security
+- ✅ Manual logout clears session
+- ✅ Works offline - no server check needed
 
 ### Replit Temporary URL Keep-Alive
 - ✅ Auto-ping server every 10 minutes to prevent idle timeout
@@ -33,23 +41,39 @@ Modern POS system with automatic billiard rental tracking, timer management, ext
 - ✅ Additional ping on page focus (auto-activity detection)
 - ✅ Prevents Replit temporary URL from sleeping after 15 min inactivity
 
-## 🚀 TRUE OFFLINE-FIRST WORKFLOW
+## 🚀 HOW IT WORKS
 
-### What Gets Downloaded to iPad:
+### Session Persistence (NEW - Minimize/Lock Fix)
+```
+OLD (BROKEN):
+1. User minimizes or screen locks
+2. Browser loses connection
+3. Session cleared - LOGOUT! ❌
+
+NEW (FIXED):
+1. User minimizes or screen locks
+2. Session saved in localStorage ✅
+3. App wakes up, session restored ✅
+4. User stays logged in! ✅
+```
+
+### TRUE OFFLINE-FIRST WORKFLOW
+
+#### What Gets Downloaded to iPad:
 1. **All Products** (MEJA 1-7, EXT001-EXT007, food items, etc.)
 2. **All Categories** (Lainnya, Minuman, Makanan, Perpanjangan, etc.)
 3. **All Billiard Tables** (table info & status)
 4. **Active Rentals** (current timers & rates)
 5. **Metadata** (last sync time, version info)
 
-### How It Works:
+#### How It Works:
 1. **First Load**: App downloads all data to device IndexedDB
 2. **Offline Mode**: Everything runs from device memory/storage
 3. **Make Changes**: Transactions queued locally (offlineQueue store)
 4. **Back Online**: Changes automatically sync to server
 5. **Periodic Sync**: Every 5 minutes download latest data
 
-### Even If Replit URL Dies:
+#### Even If Replit URL Dies:
 - App still runs 100% on device
 - Users can still browse products, create carts, manage billiard timers
 - Local data persists indefinitely
@@ -63,6 +87,12 @@ Modern POS system with automatic billiard rental tracking, timer management, ext
 3. Tap **Add** → App installs with icon
 4. App works standalone - no browser needed!
 
+### Session Persistence Test:
+1. Login: kasir1 / kasir123
+2. Minimize app or lock screen
+3. Open app again → STILL LOGGED IN! ✅
+4. Logout manually to clear session
+
 ### Offline Testing:
 1. Open PWA app on home screen
 2. Turn off WiFi/Data (Airplane mode)
@@ -73,6 +103,7 @@ Modern POS system with automatic billiard rental tracking, timer management, ext
 ### Data Syncing:
 - Check browser console for sync logs
 - See `[Sync] Downloaded X records to Y` messages
+- See `[App] Session restored dari localStorage`
 - `[KeepAlive] Server pinged successfully...` every 10 min
 - `offlineQueue` stores changes while offline
 
@@ -80,7 +111,7 @@ Modern POS system with automatic billiard rental tracking, timer management, ext
 
 Synced from server & stored on device:
 - **products** - All products (16+ items including billiards)
-- **categories** - All categories (Lainnya, Minuman, Makanan, Perpanjangan)
+- **categories** - All categories
 - **billiardTables** - All billiard table info
 - **billiardRentals** - Active rentals with timers
 - **users** - User account data
@@ -109,32 +140,44 @@ Local-only stores:
 - **Offline-first strategy**: Read from IndexedDB → fallback to server
 - Service Worker with Workbox auto-update
 - **Full database sync** every 5 minutes
+- **Session persistence** via localStorage (24-hour expiry)
 - **Keep-alive pings** every 10 minutes
 - Offline queue for transactions
 
 ### Backend (Express + Health Check)
 - Express.js + TypeScript
-- `/api/health` endpoint for keep-alive pings
-- `/api/products`, `/api/categories`, `/api/billiard-*` for sync
 - Session-based auth, role-based authorization
-- Extension auto-extend timers on checkout
+- API endpoints for billiard rentals and categories
+- Health check endpoint (`/api/health`) for keep-alive pings
+- Extension products auto-extend timers on checkout
 
 ### Database (PostgreSQL)
 - PostgreSQL (Neon) via Drizzle ORM
-- 12+ tables for full POS + billiard system
-- All data synced to device IndexedDB
+- Tables: Users, Products, Categories, Shifts, Transactions, Billiard_rentals, Billiard_tables
 
 ### Files Added/Modified:
+- `client/src/lib/session.ts` - Session persistence service (NEW)
 - `client/src/lib/db.ts` - IndexedDB with 12+ stores
-- `client/src/lib/sync.ts` - Full database sync service (NEW)
-- `client/src/lib/offlineAPI.ts` - Offline-first API layer (NEW)
+- `client/src/lib/sync.ts` - Full database sync service
+- `client/src/lib/offlineAPI.ts` - Offline-first API layer
 - `client/src/lib/keepalive.ts` - Keep-alive service
 - `client/src/main.tsx` - Init sync + keepalive on startup
+- `client/src/App.tsx` - Session restore + save on login/logout
 - `vite.config.ts` - PWA plugin configuration
 - `public/manifest.json` - App manifest
 - `server/routes.ts` - Added `/api/health` endpoint
 
 ## Testing Checklist
+
+### ✅ Session Persistence (NEW FIX):
+```
+1. Login: kasir1 / kasir123
+2. Minimize app or lock screen
+3. Wait 30 seconds
+4. Open app again → STILL LOGGED IN ✅
+5. Logout to clear session
+6. Open app → Back at login page ✅
+```
 
 ### ✅ Offline-First PWA:
 ```
@@ -154,17 +197,18 @@ Local-only stores:
 
 ### ✅ Real-World Scenario:
 ```
-SCENARIO: Replit temporary URL deleted, but app on iPad
-1. iPad app continues to work perfectly
-2. Billiard timers keep counting down
-3. Can create new orders, checkout
-4. Data stored in device (IndexedDB)
-5. When new server available: auto-sync resumes
-RESULT: Business doesn't stop!
+SCENARIO: User minimizes app, iPad goes to sleep
+1. App in background → session saved to localStorage ✅
+2. iPad locked/minimized for hours
+3. User opens app from home screen → auto-restore session ✅
+4. STILL LOGGED IN - no need to login again! ✅
+5. User can continue work immediately
+RESULT: Perfect offline-first experience!
 ```
 
 ## Key Benefits
 
+✅ **Stay Logged In**: Session persists across minimize/lock/sleep
 ✅ **No Internet Needed**: App works completely offline on iPad
 ✅ **Automatic Sync**: Data syncs when online
 ✅ **Always Available**: Replit URL or no, app keeps running
@@ -183,4 +227,7 @@ RESULT: Business doesn't stop!
 ---
 
 **App is FULLY operational and ready for production use!**
-Deployed on iPad Pro with full offline support. 🚀
+- Deployed on iPad Pro with full offline support
+- Session persists across app minimize/lock
+- Stays logged in unless manually logged out
+🚀
