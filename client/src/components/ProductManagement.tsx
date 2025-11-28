@@ -52,13 +52,21 @@ export function ProductManagement({
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.sku.toLowerCase().includes(searchQuery.toLowerCase());
     
-    // Hide EXT products (perpanjangan) from "all" category view
     const isExtProduct = product.sku.startsWith("EXT");
+    
+    // Hide EXT products (perpanjangan) from "all" category view
     if (selectedCategory === "all" && isExtProduct) {
       return false;
     }
     
     const matchesCategory = selectedCategory === "all" || product.categoryId === selectedCategory;
+    
+    // If Perpanjangan category selected, only show EXT products
+    const isPerpanjangan = categories.find(c => c.id === selectedCategory)?.name.toLowerCase().includes("perpanjangan");
+    if (matchesCategory && isPerpanjangan && !isExtProduct) {
+      return false;
+    }
+    
     return matchesSearch && matchesCategory;
   });
 
