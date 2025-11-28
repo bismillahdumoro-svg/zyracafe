@@ -1,5 +1,5 @@
 import {
-  users, categories, products, shifts, transactions, transactionItems, stockAdjustments, expenses, loans, billiardTables,
+  users, categories, products, shifts, transactions, transactionItems, stockAdjustments, expenses, loans, billiardTables, billiardRentals,
   type User, type InsertUser,
   type Category, type InsertCategory,
   type Product, type InsertProduct,
@@ -9,7 +9,8 @@ import {
   type StockAdjustment, type InsertStockAdjustment,
   type Expense, type InsertExpense,
   type Loan, type InsertLoan,
-  type BilliardTable, type InsertBilliardTable
+  type BilliardTable, type InsertBilliardTable,
+  type BilliardRental, type InsertBilliardRental
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, gte, lte, sql } from "drizzle-orm";
@@ -81,6 +82,10 @@ export interface IStorage {
   createBilliardTable(table: InsertBilliardTable): Promise<BilliardTable>;
   updateBilliardTable(id: string, table: Partial<InsertBilliardTable>): Promise<BilliardTable | undefined>;
   deleteBilliardTable(id: string): Promise<boolean>;
+
+  // Billiard Rentals
+  createBilliardRental(rental: InsertBilliardRental): Promise<BilliardRental>;
+  getActiveBilliardRentals(): Promise<BilliardRental[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -356,6 +361,16 @@ export class DatabaseStorage implements IStorage {
   async deleteBilliardTable(id: string): Promise<boolean> {
     await db.delete(billiardTables).where(eq(billiardTables.id, id));
     return true;
+  }
+
+  // Billiard Rentals
+  async createBilliardRental(insertRental: InsertBilliardRental): Promise<BilliardRental> {
+    const [rental] = await db.insert(billiardRentals).values(insertRental).returning();
+    return rental;
+  }
+
+  async getActiveBilliardRentals(): Promise<BilliardRental[]> {
+    return db.select().from(billiardRentals).where(eq(billiardRentals.status, "active")).orderBy(desc(billiardRentals.startTime));
   }
 }
 

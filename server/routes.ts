@@ -497,6 +497,34 @@ export async function registerRoutes(
     }
   });
 
+  // ============ BILLIARD RENTALS ROUTE ============
+  app.post("/api/billiard-rentals", async (req: Request, res: Response) => {
+    try {
+      const { shiftId, tableNumber, hoursRented, hourlyRate, totalPrice } = req.body;
+      const rental = await storage.createBilliardRental({
+        shiftId,
+        tableNumber,
+        hoursRented,
+        hourlyRate,
+        totalPrice,
+        endTime: null,
+        status: "active"
+      });
+      res.json(rental);
+    } catch (error) {
+      res.status(400).json({ message: "Data rental billiard tidak valid" });
+    }
+  });
+
+  app.get("/api/billiard-rentals/active", async (req: Request, res: Response) => {
+    try {
+      const rentals = await storage.getActiveBilliardRentals();
+      res.json(rentals);
+    } catch (error) {
+      res.status(500).json({ message: "Gagal mengambil data rental aktif" });
+    }
+  });
+
   // ============ SEED DATA ROUTE ============
   app.post("/api/seed", async (req: Request, res: Response) => {
     try {
