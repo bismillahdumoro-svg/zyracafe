@@ -14,6 +14,8 @@ interface BilliardRentalLocal {
   totalPrice: number;
   startTime: Date;
   remainingSeconds: number;
+  lastExtendedTime?: Date;
+  extensionCount?: number;
 }
 
 interface ProductCardProps {

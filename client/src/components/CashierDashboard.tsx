@@ -224,6 +224,8 @@ export function CashierDashboard({
                 ...rental,
                 remainingSeconds: rental.remainingSeconds + totalHours * 3600,
                 hoursRented: rental.hoursRented + totalHours,
+                lastExtendedTime: new Date(),
+                extensionCount: ((rental as any).extensionCount || 0) + item.quantity,
               };
             }
             return rental;
@@ -269,6 +271,8 @@ export function CashierDashboard({
           totalPrice: data.totalPrice,
           startTime: new Date(),
           remainingSeconds: totalSeconds,
+          lastExtendedTime: undefined,
+          extensionCount: 0,
         },
       ]);
       

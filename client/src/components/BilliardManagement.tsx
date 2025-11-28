@@ -132,7 +132,13 @@ export function BilliardManagement({
                       <TableCell>{rental.hoursRented} jam</TableCell>
                       <TableCell>{formatCurrency(rental.totalPrice)}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {formatDateTime(new Date(rental.startTime))}
+                        {rental.lastExtendedTime ? (
+                          <span className="text-green-600 dark:text-green-400 font-semibold">
+                            Diperpanjang: {formatDateTime(new Date(rental.lastExtendedTime))} (+{rental.extensionCount || 1} jam)
+                          </span>
+                        ) : (
+                          formatDateTime(new Date(rental.startTime))
+                        )}
                       </TableCell>
                       <TableCell>
                         <div className="font-mono font-bold text-blue-600 dark:text-blue-400 text-lg">
