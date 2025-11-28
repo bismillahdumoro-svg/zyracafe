@@ -185,7 +185,7 @@ function AppContent() {
     mutationFn: async ({ items, paymentAmount, paymentMethod, customerName }: {
       items: CartItem[];
       paymentAmount: number;
-      paymentMethod: "cash" | "card" | "qris";
+      paymentMethod: "cash" | "qris";
       customerName: string;
     }) => {
       const subtotal = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
@@ -226,7 +226,7 @@ function AppContent() {
     },
   });
 
-  const handleCheckout = (items: CartItem[], paymentAmount: number, paymentMethod: "cash" | "card" | "qris", customerName: string) => {
+  const handleCheckout = (items: CartItem[], paymentAmount: number, paymentMethod: "cash" | "qris", customerName: string) => {
     checkoutMutation.mutate({ items, paymentAmount, paymentMethod, customerName });
   };
 

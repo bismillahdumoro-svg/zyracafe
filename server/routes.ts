@@ -419,7 +419,7 @@ export async function registerRoutes(
     total: z.number(),
     paymentAmount: z.number(),
     change: z.number(),
-    paymentMethod: z.enum(["cash", "card", "qris"]),
+    paymentMethod: z.enum(["cash", "qris"]),
   });
 
   app.post("/api/transactions", async (req: Request, res: Response) => {

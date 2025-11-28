@@ -12,6 +12,7 @@ Modern POS system with automatic billiard rental tracking, full offline-first PW
 - ✅ Double-booking prevention with warnings
 - ✅ Category management with Perpanjangan handling
 - ✅ Role-based access (Cashier & Admin)
+- ✅ Payment methods: Tunai (Cash) & QRIS only
 
 ### Shift Close Report ✅ NEW!
 - ✅ Detailed recap when kasir ends shift

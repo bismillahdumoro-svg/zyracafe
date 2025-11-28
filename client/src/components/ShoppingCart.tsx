@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Minus, Plus, Trash2, ShoppingCart as CartIcon, CreditCard, Smartphone, Banknote } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingCart as CartIcon, Smartphone, Banknote } from "lucide-react";
 import { CartItem } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
 
@@ -12,7 +12,7 @@ interface ShoppingCartProps {
   items: CartItem[];
   onUpdateQuantity: (productId: string, quantity: number) => void;
   onRemoveItem: (productId: string) => void;
-  onCheckout: (paymentAmount: number, paymentMethod: "cash" | "card" | "qris", customerName: string) => void;
+  onCheckout: (paymentAmount: number, paymentMethod: "cash" | "qris", customerName: string) => void;
   onClear: () => void;
 }
 
@@ -24,7 +24,7 @@ export function ShoppingCart({
   onClear,
 }: ShoppingCartProps) {
   const [paymentAmount, setPaymentAmount] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card" | "qris">("cash");
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "qris">("cash");
   const [customerName, setCustomerName] = useState("");
 
   const subtotal = items.reduce(
@@ -162,16 +162,6 @@ export function ShoppingCart({
               >
                 <Banknote className="h-4 w-4 mr-1" />
                 Tunai
-              </Button>
-              <Button
-                variant={paymentMethod === "card" ? "default" : "outline"}
-                size="sm"
-                className="flex-1"
-                onClick={() => setPaymentMethod("card")}
-                data-testid="button-payment-card"
-              >
-                <CreditCard className="h-4 w-4 mr-1" />
-                Kartu
               </Button>
               <Button
                 variant={paymentMethod === "qris" ? "default" : "outline"}

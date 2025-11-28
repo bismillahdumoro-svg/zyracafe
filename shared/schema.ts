@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "cashier"]);
 export const shiftStatusEnum = pgEnum("shift_status", ["active", "closed"]);
-export const paymentMethodEnum = pgEnum("payment_method", ["cash", "card", "qris"]);
+export const paymentMethodEnum = pgEnum("payment_method", ["cash", "qris"]);
 
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
