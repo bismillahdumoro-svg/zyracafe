@@ -246,16 +246,43 @@ Billiard: 85% | Cafe: 15%
 - `client/src/components/ShiftCloseReport.tsx` - Enhanced with expenses breakdown + WhatsApp share
 - `client/src/components/ShiftManagement.tsx` - Updated ShiftSummary interface
 
-## 🚀 Next Steps
+## 🚀 Deployment Options
 
-1. **Deploy to Production** - Click Publish in Replit dashboard
-2. **Check Google Drive backups:**
+### Option 1: Replit (SIMPLEST)
+```
+Click "Publish" di Replit dashboard
+✅ Instant deploy
+✅ Free URL provided
+✅ Backups tetap running
+```
+
+### Option 2: Google App Engine (RECOMMENDED)
+```bash
+# 1. npm run build
+# 2. gcloud auth login
+# 3. gcloud config set project YOUR-PROJECT-ID
+# 4. gcloud app deploy app.yaml
+
+✅ Auto-scaling
+✅ Free tier: 28 instance-hours/day
+✅ Backups tetap running
+ℹ️ See DEPLOY_GCLOUD.md untuk detailed guide
+```
+
+### Option 3: Render / Railway (EASY ALTERNATIVE)
+- GitHub integration for auto-deploy
+- Free tier dengan PostgreSQL
+- Good untuk backup plan
+
+## 📋 Deployment Checklist
+
+1. **Check Google Drive backups:**
    - 📊 Database backup: `pos-backup-YYYY-MM-DD.json` (2 AM)
    - 📦 Code backup: `pos-code-backup-YYYY-MM-DD.tar.gz` (3 AM)
-3. **First backups run within 2 minutes** after server startup
-4. **Test offline mode** - Close browser = app pakai cache lokal
-5. **Admin Dashboard** - Click "Backup" untuk lihat backup status
-6. **Share URL with team** - Semua fitur offline-first ready!
+2. **Test offline mode** - Close browser = app pakai cache lokal
+3. **Admin Dashboard** - Click "Backup" untuk lihat backup status
+4. **First backups run within 2 minutes** after server startup
+5. **Share URL with team** - Semua fitur offline-first ready!
 
 ## 📦 Distribution
 

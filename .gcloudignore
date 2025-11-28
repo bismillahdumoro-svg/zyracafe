@@ -1,0 +1,36 @@
+# Git files
+.git
+.gitignore
+
+# Node.js
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build files
+dist
+build
+.next
+
+# Development
+.env.local
+.env.development
+.replit
+.DS_Store
+
+# IDE
+.vscode
+.idea
+*.swp
+
+# Temp
+/tmp
+/temp
+.cache
+
+# Backup files
+server/code-backup.ts
+code-backup files
+*.tar.gz
+*.zip
