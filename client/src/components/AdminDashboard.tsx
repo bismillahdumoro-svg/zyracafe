@@ -163,7 +163,7 @@ export function AdminDashboard({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
+                  <TableHead>Nama Pembeli</TableHead>
                   <TableHead>Kasir</TableHead>
                   <TableHead>Item</TableHead>
                   <TableHead>Metode</TableHead>
@@ -174,7 +174,7 @@ export function AdminDashboard({
               <TableBody>
                 {recentTransactions.map((transaction) => (
                   <TableRow key={transaction.id} data-testid={`transaction-row-${transaction.id}`}>
-                    <TableCell className="font-mono text-sm">{transaction.id}</TableCell>
+                    <TableCell className="font-medium">{transaction.customerName}</TableCell>
                     <TableCell>{transaction.cashierName}</TableCell>
                     <TableCell>{transaction.items.length} item</TableCell>
                     <TableCell>
