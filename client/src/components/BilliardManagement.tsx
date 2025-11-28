@@ -22,12 +22,13 @@ export function BilliardManagement({
   onAddTable,
   onUpdateTable,
   onDeleteTable,
+  activeRentals = [],
 }: BilliardManagementProps) {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ tableNumber: "", hourlyRate: "" });
-  const [activeRentals, setActiveRentals] = useState<any[]>([]);
+  const [localRentals, setLocalRentals] = useState<any[]>([]);
 
   const handleAdd = () => {
     if (form.tableNumber && form.hourlyRate) {
@@ -58,23 +59,26 @@ export function BilliardManagement({
     }
   };
 
-  // Load active rentals from localStorage
+  // Load local rentals from localStorage for countdown timer
   useEffect(() => {
-    const loadActiveRentals = () => {
+    const loadLocalRentals = () => {
       try {
         const saved = localStorage.getItem("billiardRentals");
         if (saved) {
-          setActiveRentals(JSON.parse(saved));
+          setLocalRentals(JSON.parse(saved));
         }
       } catch {
-        setActiveRentals([]);
+        setLocalRentals([]);
       }
     };
 
-    loadActiveRentals();
-    const interval = setInterval(loadActiveRentals, 1000);
+    loadLocalRentals();
+    const interval = setInterval(loadLocalRentals, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  // Combine API rentals with local rentals for full data (prioritize local for ongoing timers)
+  const displayRentals = localRentals.length > 0 ? localRentals : activeRentals;
 
   const getRemainingTime = (startTime: string, hoursRented: number) => {
     const elapsed = Math.floor((Date.now() - new Date(startTime).getTime()) / 1000);
@@ -107,7 +111,7 @@ export function BilliardManagement({
           <CardTitle>Sewa Billiard Aktif</CardTitle>
         </CardHeader>
         <CardContent>
-          {activeRentals.length === 0 ? (
+          {displayRentals.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">Tidak ada sewa billiard aktif saat ini</div>
           ) : (
             <div className="overflow-x-auto">
@@ -122,7 +126,7 @@ export function BilliardManagement({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {activeRentals.map((rental) => (
+                  {displayRentals.map((rental) => (
                     <TableRow key={rental.id} data-testid={`active-rental-${rental.id}`}>
                       <TableCell className="font-medium">Meja #{rental.tableNumber}</TableCell>
                       <TableCell>{rental.hoursRented} jam</TableCell>
