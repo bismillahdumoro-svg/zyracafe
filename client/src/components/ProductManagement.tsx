@@ -103,7 +103,7 @@ export function ProductManagement({
     }
   };
 
-  const ProductForm = () => (
+  const formContent = (
     <div className="space-y-4 py-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
@@ -114,6 +114,7 @@ export function ProductManagement({
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             placeholder="Masukkan nama produk"
             data-testid="input-product-name"
+            autoComplete="off"
           />
         </div>
         <div className="space-y-2">
@@ -124,6 +125,7 @@ export function ProductManagement({
             onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
             placeholder="Masukkan SKU"
             data-testid="input-product-sku"
+            autoComplete="off"
           />
         </div>
       </div>
@@ -137,6 +139,7 @@ export function ProductManagement({
             onChange={(e) => setFormData({ ...formData, price: e.target.value })}
             placeholder="Masukkan harga"
             data-testid="input-product-price"
+            autoComplete="off"
           />
         </div>
         <div className="space-y-2">
@@ -148,6 +151,7 @@ export function ProductManagement({
             onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
             placeholder="Masukkan stok"
             data-testid="input-product-stock"
+            autoComplete="off"
           />
         </div>
       </div>
@@ -280,7 +284,7 @@ export function ProductManagement({
               Masukkan informasi produk baru.
             </DialogDescription>
           </DialogHeader>
-          <ProductForm />
+          {formContent}
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAddDialog(false)}>
               Batal
@@ -300,7 +304,7 @@ export function ProductManagement({
               Ubah informasi produk.
             </DialogDescription>
           </DialogHeader>
-          <ProductForm />
+          {formContent}
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowEditDialog(false)}>
               Batal
