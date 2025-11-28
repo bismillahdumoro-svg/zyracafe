@@ -2,6 +2,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import { initDB } from "./lib/db";
+import { startKeepAlive } from "./lib/keepalive";
 
 // Initialize IndexedDB
 initDB().then(() => {
@@ -9,6 +10,9 @@ initDB().then(() => {
 }).catch((error) => {
   console.warn("IndexedDB initialization failed:", error);
 });
+
+// Start keep-alive untuk prevent Replit temporary URL idle timeout
+startKeepAlive();
 
 // Register Service Worker untuk offline support
 if ("serviceWorker" in navigator) {

@@ -25,6 +25,11 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // ============ HEALTH CHECK ROUTE (untuk keep-alive) ============
+  app.get("/api/health", (req: Request, res: Response) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
   // ============ AUTH ROUTES ============
   const loginSchema = z.object({
     username: z.string().min(1),

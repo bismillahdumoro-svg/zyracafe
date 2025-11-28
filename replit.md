@@ -1,7 +1,7 @@
 # POS Application - Billiard Rental Management System
 
-## Overview (Nov 28, 2025) - ✅ PWA ENABLED
-Modern POS system with automatic billiard rental tracking, timer management, extension/renewal products, and **offline-first Progressive Web App** capabilities.
+## Overview (Nov 28, 2025) - ✅ PWA ENABLED + KEEP-ALIVE
+Modern POS system with automatic billiard rental tracking, timer management, extension/renewal products, and **offline-first Progressive Web App** capabilities with Replit temporary URL keep-alive.
 
 ## ✅ COMPLETED FEATURES
 
@@ -23,6 +23,14 @@ Modern POS system with automatic billiard rental tracking, timer management, ext
 - ✅ Network-first API caching (sync when online)
 - ✅ Manifest.json with app icons and metadata
 - ✅ Mobile-optimized with PWA shortcuts
+
+### Replit Temporary URL Keep-Alive
+- ✅ Auto-ping server every 10 minutes to prevent idle timeout
+- ✅ Background keep-alive script (client/src/lib/keepalive.ts)
+- ✅ Health check endpoint: `/api/health`
+- ✅ Additional ping on page focus (auto-activity detection)
+- ✅ Prevents Replit temporary URL from sleeping after 15 min inactivity
+- ✅ Logs keep-alive pings in console (for debugging)
 
 ## How to Use as PWA
 
@@ -48,6 +56,12 @@ Modern POS system with automatic billiard rental tracking, timer management, ext
 - ✅ Automatic sync when online
 - ✅ Timer countdown continues offline
 - ✅ No data loss - persists between app sessions
+
+## Keep-Alive for Temporary URL
+- ✅ App automatically pings server every 10 minutes
+- ✅ Keeps Replit temporary URL from going idle (sleeps after 15 min)
+- ✅ Temporary URL stays ACTIVE even when not using the app
+- ✅ Safe to leave open - minimal server load
 
 ## Testing Steps for All Features
 
@@ -87,6 +101,16 @@ iOS:
 5. Menu "Sewa Billiard" → Info berubah ke "Diperpanjang: ... (+1 jam)" hijau
 ```
 
+### 4. Test Keep-Alive (Temporary URL Persistence)
+```
+1. Open app in browser
+2. Open DevTools → Console
+3. See "[KeepAlive] Started - will ping server every 10 minutes"
+4. Every 10 min: "[KeepAlive] Server pinged successfully..."
+5. Close browser but keep app running
+6. After 15 min, URL still works (wasn't put to sleep)
+```
+
 ## Product Categories
 - **Semua**: All products except EXT (Perpanjangan)
 - **Makanan, Minuman, Snack, Rokok, Lainnya**: Regular products
@@ -104,11 +128,13 @@ iOS:
 - State: TanStack Query + localStorage + IndexedDB
 - Real-time timer countdown with extension tracking
 - Offline-first architecture
+- Keep-alive script for Replit temporary URL persistence
 
 ### Backend
 - Express.js + TypeScript
 - Session-based auth, role-based authorization
 - API endpoints for billiard rentals and categories
+- Health check endpoint (`/api/health`) for keep-alive pings
 - Extension products auto-extend timers on checkout
 
 ### Database
@@ -119,8 +145,9 @@ iOS:
 - **Service Worker**: Vite PWA with Workbox
 - **Caching Strategy**: NetworkFirst for API, StaleWhileRevalidate for assets
 - **Local Storage**: IndexedDB for data persistence
-- **Manifest**: app-256px.png, icons, shortcuts, theme colors
+- **Manifest**: app icons, shortcuts, theme colors
 - **Auto-Update**: Service Worker auto-updates when new version deployed
+- **Keep-Alive**: Background pings every 10 minutes (`client/src/lib/keepalive.ts`)
 
 ## Key Design Decisions
 - Extension products (EXT) use numeric extraction: EXT001 = MEJA 1
@@ -128,10 +155,13 @@ iOS:
 - Perpanjangan display: Shows "Diperpanjang: [datetime] (+[jam])" when extended
 - PWA offline-first: All data cached locally, syncs when online
 - Service Worker auto-update: New versions deployed automatically
+- Keep-alive pings: Every 10 minutes (prevents 15-min idle timeout)
 
-## Files Modified for PWA
+## Files Modified for PWA + Keep-Alive
 - `vite.config.ts` - Added VitePWA plugin with Workbox
 - `client/index.html` - Added manifest link & PWA meta tags
-- `client/src/main.tsx` - IndexedDB initialization
+- `client/src/main.tsx` - IndexedDB initialization + keep-alive startup
 - `client/src/lib/db.ts` - New IndexedDB helper functions
+- `client/src/lib/keepalive.ts` - Keep-alive ping service (NEW)
 - `public/manifest.json` - PWA app manifest & metadata
+- `server/routes.ts` - Added `/api/health` health check endpoint
