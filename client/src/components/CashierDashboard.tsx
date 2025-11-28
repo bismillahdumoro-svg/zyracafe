@@ -191,7 +191,7 @@ export function CashierDashboard({
     
     cart.forEach((item) => {
       if (item.product.name.toUpperCase().includes("MEJA")) {
-        const tableNumber = item.product.name.split("MEJA ")[1]?.split(" ")[0] || item.product.name;
+        const tableNumber = String(item.product.name.split("MEJA ")[1]?.split(" ")[0] || item.product.name).trim();
         const hoursPerUnit = 1;
         const totalHours = hoursPerUnit * item.quantity;
         
@@ -542,9 +542,9 @@ export function CashierDashboard({
             {activeTab === "billiard" && (
               <div className="flex-1 overflow-y-auto">
                 <div className="p-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
                     {[1, 2, 3, 4, 5, 6, 7].map((tableNum) => {
-                      const rental = billiardRentals.find((r) => r.tableNumber === tableNum.toString());
+                      const rental = billiardRentals.find((r) => String(r.tableNumber).trim() === tableNum.toString());
                       const hours = rental ? Math.floor(rental.remainingSeconds / 3600) : 0;
                       const minutes = rental ? Math.floor((rental.remainingSeconds % 3600) / 60) : 0;
                       const seconds = rental ? rental.remainingSeconds % 60 : 0;
