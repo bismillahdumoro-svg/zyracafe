@@ -208,7 +208,16 @@ export function ShoppingCart({
                 />
                 <div className="space-y-2">
                   <label className="text-sm font-medium">UANG PAS</label>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-5 gap-2">
+                    <Button
+                      variant={paymentAmount === total.toString() ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setPaymentAmount(total.toString())}
+                      data-testid="button-exact-payment"
+                      className="col-span-1"
+                    >
+                      Pas
+                    </Button>
                     {quickAmounts.map((amount) => (
                       <Button
                         key={amount}
