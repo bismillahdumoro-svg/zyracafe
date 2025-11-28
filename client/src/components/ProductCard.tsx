@@ -33,12 +33,12 @@ export function ProductCard({ product, onAddToCart, activeBilliardRentals = [] }
   
   // EXT products are extension/renewal products - always orderable
   const isExtensionProduct = product.sku.startsWith("EXT");
-  const canOrder = !isOutOfStock && (!isBilliardProduct || !isCurrentlyRented);
+  const canOrder = !isOutOfStock && (!isBilliardProduct || !isCurrentlyRented || isExtensionProduct);
 
   return (
     <Card
-      className={`hover-elevate active-elevate-2 cursor-pointer transition-all h-full flex flex-col ${isOutOfStock || isCurrentlyRented ? "opacity-60" : ""}`}
-      onClick={() => !isOutOfStock && !isCurrentlyRented && onAddToCart(product)}
+      className={`hover-elevate active-elevate-2 cursor-pointer transition-all h-full flex flex-col ${isOutOfStock || (isCurrentlyRented && !isExtensionProduct) ? "opacity-60" : ""}`}
+      onClick={() => !isOutOfStock && (!isCurrentlyRented || isExtensionProduct) && onAddToCart(product)}
       data-testid={`card-product-${product.id}`}
     >
       <CardContent className="p-2 flex flex-col h-full">
@@ -67,7 +67,7 @@ export function ProductCard({ product, onAddToCart, activeBilliardRentals = [] }
             )}
           </div>
         </div>
-        {isCurrentlyRented && (
+        {isCurrentlyRented && !isExtensionProduct && (
           <Alert className="mb-2 p-2 bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800">
             <AlertCircle className="h-3 w-3 text-red-600 dark:text-red-400" />
             <AlertDescription className="text-xs text-red-600 dark:text-red-400 ml-1">
@@ -84,7 +84,7 @@ export function ProductCard({ product, onAddToCart, activeBilliardRentals = [] }
           }}
           data-testid={`button-add-cart-${product.id}`}
         >
-          {isCurrentlyRented && !isExtensionProduct ? "Tidak Tersedia" : isOutOfStock ? "Habis" : "Tambah"}
+          {isOutOfStock ? "Habis" : isCurrentlyRented && !isExtensionProduct ? "Tidak Tersedia" : "Tambah"}
         </Button>
       </CardContent>
     </Card>
