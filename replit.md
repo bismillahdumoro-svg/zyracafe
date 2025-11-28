@@ -1,7 +1,7 @@
 # POS Application - Billiard Rental Management System
 
-## Overview (Nov 28, 2025) - ✅ COMPLETE OFFLINE-FIRST PWA + STATIC BUILD READY
-Modern POS system with automatic billiard rental tracking, full offline-first PWA with session persistence, AND **static distribution-ready build** for ZIP deployment.
+## Overview (Nov 28, 2025) - ✅ COMPLETE PRODUCTION SYSTEM
+Modern POS system with automatic billiard rental tracking, full offline-first PWA with session persistence, keep-alive, AND **detailed shift close report** with billiard vs cafe income breakdown.
 
 ## ✅ COMPLETED FEATURES
 
@@ -13,6 +13,15 @@ Modern POS system with automatic billiard rental tracking, full offline-first PW
 - ✅ Category management with Perpanjangan handling
 - ✅ Role-based access (Cashier & Admin)
 
+### Shift Close Report ✅ NEW!
+- ✅ Detailed recap when kasir ends shift
+- ✅ **Billiard income separated** - show earnings from billiard rentals
+- ✅ **Cafe income separated** - show earnings from products/cafe
+- ✅ Total income breakdown with percentage
+- ✅ Transaction count for each category
+- ✅ Print functionality for receipt
+- ✅ Beautiful visual charts/bars
+
 ### Progressive Web App - OFFLINE-FIRST ✅
 - ✅ Install on home screen (iOS & Android)
 - ✅ Full database sync - 28+ records on device
@@ -20,9 +29,8 @@ Modern POS system with automatic billiard rental tracking, full offline-first PW
 - ✅ Offline-first operations
 - ✅ Auto-update on new versions
 - ✅ Periodic sync every 5 minutes
-- ✅ Offline queue for transactions
 
-### Session Persistence ✅ NEW!
+### Session Persistence ✅
 - ✅ Session saved to localStorage on login
 - ✅ Auto-restore when app wakes up
 - ✅ Stays logged in across minimize/lock
@@ -31,126 +39,55 @@ Modern POS system with automatic billiard rental tracking, full offline-first PW
 
 ### Replit Temporary URL Keep-Alive ✅
 - ✅ Auto-ping server every 10 minutes
-- ✅ Background pings prevent 15-min idle timeout
 - ✅ Keeps temporary URL active 24/7
+- ✅ Prevents idle timeout
 
-### Static Build Distribution ✅ NEW!
+### Static Build Distribution ✅
 - ✅ Production build successful
 - ✅ All JavaScript/CSS bundled + minified
-- ✅ Compressed archive (tar.gz) ready
+- ✅ ZIP archive (pos-billiard-app-dist.tar.gz) ready
 - ✅ Works offline WITHOUT server
-- ✅ Perfect for ZIP distribution
 
-## 📦 Build Status
+## 🎯 How Shift Close Report Works
 
-**Build Output:**
-```
-✓ 2546 modules transformed
-✓ Client build: 875 KB (246 KB gzipped)
-✓ Service Worker: Generated
-✓ Manifest: Configured
-✓ Static files ready in dist/public/
-✓ Archive: pos-billiard-app-dist.tar.gz
-```
+### When Kasir Ends Shift:
 
-## 🚀 Distribution Methods
+1. **Click "Akhiri Shift" button** → Beautiful report dialog opens
+2. **See detailed breakdown:**
+   - Pendapatan Sewa Billiard (Billiard income)
+   - Pendapatan Cafe/Produk (Cafe/product income)
+   - Total income with percentage split
+   - Transaction counts for each
 
-### 1. ZIP for Local Deployment
-```bash
-# Extract: tar -xzf pos-billiard-app-dist.tar.gz
-# Serve: python -m http.server 5000
-# Open: http://localhost:5000
-```
+3. **Print or confirm close**
+   - Print button untuk receipt
+   - Confirm button untuk tutup shift
+   - Back button kalau belum siap
 
-### 2. GitHub Pages (Zero Cost)
-- Push dist/public to GitHub Pages branch
-- App accessible from anywhere
-- No server cost, no maintenance
-
-### 3. Direct iPad Install (Recommended)
-- Host on Replit (current)
-- Or upload to any web server
-- On iPad: Open → Share → Add to Home Screen
-- Works offline 100%!
-
-## 📱 How It Works
-
-### First Load
-1. User opens app
-2. IndexedDB auto-creates database
-3. Service Worker registers
-4. 28+ records sync to device
-5. App ready to use offline
-
-### Subsequent Loads
-1. Service Worker serves from cache
-2. Data read from IndexedDB first
-3. Auto-sync background (every 5 min)
-4. No server needed if offline
-5. Session auto-restored from localStorage
-
-### Offline Workflow
-```
-Offline Mode:
-1. App uses IndexedDB data
-2. Changes queued locally
-3. No server calls
-4. User can work normally
-
-When Back Online:
-1. Auto-sync uploads changes
-2. Downloads latest data
-3. Conflicts resolved gracefully
-4. All changes propagated
-```
-
-## 📊 Data Synced to Device
-
-**On First Load:**
-- 15 Products (MEJA 1-7, EXT001-EXT007, etc.)
-- 5 Categories
-- 8+ Billiard Rentals (active)
-- User accounts
-- All metadata
-
-**Auto-Synced Every 5 Minutes:**
-- Latest product data
-- New/updated categories
-- Active billiard rentals
-- Sync metadata
-
-## 🎯 Real-World Scenario
+### Example Report:
 
 ```
-SCENARIO: User minimizes app on iPad, network drops
+Rekap Shift - Kasir Satu
+────────────────────────
+Waktu Mulai: 28 Nov 2025, 19:50
+Durasi: 1j 8m
+────────────────────────
 
-OLD (BROKEN):
-1. Minimize app → Session lost ❌
-2. Network drops → Can't use app ❌
+💰 Pendapatan Sewa Billiard
+   Total: Rp 340.000
+   Transaksi: 17
 
-NEW (WORKS PERFECTLY):
-1. Minimize app → Session saved in localStorage ✅
-2. App wakes up → Session restored ✅
-3. Network drops → App uses device data ✅
-4. Can browse, create orders, manage billiard ✅
-5. Network back → Auto-sync ✅
+💰 Pendapatan Cafe/Produk
+   Total: Rp 60.000
+   Transaksi: 8
 
-RESULT: Perfect offline-first experience! 🎉
+════════════════════════
+TOTAL PENDAPATAN: Rp 400.000
+
+Billiard: 85%
+Cafe: 15%
+════════════════════════
 ```
-
-## 📝 Build Files
-
-### Main Distribution
-- **dist/public/** - Static files (index.html, JS, CSS)
-- **pos-billiard-app-dist.tar.gz** - Compressed archive
-- **public/manifest.json** - PWA metadata
-
-### Key Files Generated
-- `index.html` - App entry point
-- `service-worker.js` - Offline support
-- `assets/index-*.js` - Bundled app code
-- `assets/index-*.css` - Bundled styles
-- `favicon.png` - App icon
 
 ## 🔐 Credentials
 
@@ -159,115 +96,45 @@ RESULT: Perfect offline-first experience! 🎉
 
 ## 🏗️ System Architecture
 
-### Frontend (Production Build)
-- React + TypeScript
-- Vite bundled + minified
-- Service Worker pre-generated
-- PWA manifest included
-- Total size: ~875 KB (246 KB compressed)
+### Backend
+- Express.js + TypeScript
+- New endpoint: `GET /api/shifts/:id/summary` - calculates billiard vs cafe breakdown
+- `PUT /api/shifts/:id/end` - closes shift (unchanged)
 
-### Offline Strategy
-- Service Worker caches all static files
-- IndexedDB stores 12+ data tables
-- localStorage for session persistence
-- Offline queue for transactions
-- Auto-sync on connectivity restore
+### Frontend
+- React + TypeScript + Vite
+- New component: `ShiftCloseReport.tsx` - beautiful report dialog
+- Updated: `ShiftManagement.tsx` - "Akhiri Shift" button with report flow
 
 ### Database
-- PostgreSQL (Neon) for server
-- IndexedDB for device local copy
-- All data synced automatically
+- PostgreSQL (Neon) via Drizzle ORM
+- Detects billiard items by product name containing "MEJA"
+- Automatically splits cafe items (non-MEJA)
 
-## 📋 Testing Checklist
+## 📋 Files Modified
 
-### ✅ Static Build
-```
-1. Build: npm run build ✅
-2. Files generated in dist/public/ ✅
-3. Service Worker created ✅
-4. Archive created ✅
-```
-
-### ✅ Offline Testing
-```
-1. Extract archive
-2. Serve locally: python -m http.server 5000
-3. Open: http://localhost:5000
-4. Turn off WiFi
-5. App still works ✅
-```
-
-### ✅ Session Persistence
-```
-1. Login: kasir1 / kasir123
-2. Minimize or close app
-3. Reopen → Still logged in ✅
-```
-
-### ✅ iPad Home Screen
-```
-1. Open on iPad Safari
-2. Share → Add to Home Screen
-3. Tap app from home screen
-4. Works offline ✅
-```
+- `server/routes.ts` - Added `/api/shifts/:id/summary` endpoint
+- `client/src/components/ShiftCloseReport.tsx` - NEW report component
+- `client/src/components/ShiftManagement.tsx` - Added report flow + buttons
 
 ## 🚀 Next Steps
 
-### Option 1: Deploy to Production (Recommended)
-- Click **Publish** in Replit dashboard
-- Get permanent URL
-- Share with team
-- App works on iPad offline
+1. **Deploy to Production** - Click Publish in Replit dashboard
+2. **Share URL with team** - App works offline + keep-alive active
+3. **Test on iPad** - Install to home screen, test shift close report
+4. **Print shift reports** - Use print button untuk paperwork
 
-### Option 2: GitHub Pages Distribution
-- Push dist/public to GitHub
-- Enable GitHub Pages
-- Share link with team
-- Works 24/7, no server cost
+## 📦 Distribution
 
-### Option 3: Direct ZIP Distribution
-- Send pos-billiard-app-dist.tar.gz
-- User extracts + opens index.html
-- Works offline immediately
-
-## 📦 Archive Contents
-
-```
-pos-billiard-app-dist.tar.gz contains:
-├── dist/public/
-│   ├── index.html (2.76 KB)
-│   ├── service-worker.js (auto-generated)
-│   ├── manifest.json
-│   ├── favicon.png
-│   └── assets/
-│       ├── index-*.js (875 KB)
-│       └── index-*.css (75 KB)
-└── public/manifest.json
-```
-
-## ✨ Key Benefits
-
-✅ **Zero Setup** - No server needed after deployment
-✅ **Works Offline** - Billiard timers continue offline
-✅ **Session Persistent** - Stay logged in
-✅ **Auto-Sync** - Data syncs automatically
-✅ **Production Ready** - Fully tested and optimized
-✅ **Mobile First** - Perfect for iPad
-✅ **No Cost** - Replit free tier + GitHub Pages
-✅ **Instant Start** - Open app, it works
-
-## 📖 Documentation
-
-- `STATIC_BUILD_INSTRUCTIONS.md` - How to use static build
-- `replit.md` - This file, full documentation
+- **Static build**: `pos-billiard-app-dist.tar.gz` (257 KB)
+- **Extract & serve**: Works fully offline
+- **GitHub Pages**: Push dist/public for free hosting
 
 ---
 
 **App is PRODUCTION READY!** 🚀
-
-Ready to:
-- Deploy via Replit Publish
-- Distribute as ZIP
-- Host on GitHub Pages
-- Run completely offline
+- Shift close report dengan breakdown billiard vs cafe
+- Full offline-first PWA
+- Keep-alive untuk Replit URL
+- Session persistence
+- Static build ready untuk distribusi

@@ -5,24 +5,42 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Clock, Eye } from "lucide-react";
+import { Clock, Eye, LogOut } from "lucide-react";
 import { Shift, Transaction } from "@/lib/types";
 import { formatCurrency, formatDateTime, formatTime } from "@/lib/utils";
 import { useState } from "react";
+import { apiRequest } from "@/lib/queryClient";
+import { ShiftCloseReport } from "./ShiftCloseReport";
+import { useToast } from "@/hooks/use-toast";
 
 interface ShiftManagementProps {
   shifts: Shift[];
   transactions: Transaction[];
   onViewShiftDetails: (shiftId: string) => void;
+  onShiftEnded?: () => void;
+}
+
+interface ShiftSummary {
+  totalIncome: number;
+  billiardIncome: number;
+  billiardTransactions: number;
+  cafeIncome: number;
+  cafeTransactions: number;
+  totalTransactions: number;
 }
 
 export function ShiftManagement({
   shifts,
   transactions,
   onViewShiftDetails,
+  onShiftEnded,
 }: ShiftManagementProps) {
+  const { toast } = useToast();
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  const [showReportDialog, setShowReportDialog] = useState(false);
+  const [shiftSummary, setShiftSummary] = useState<ShiftSummary | null>(null);
+  const [closingShiftId, setClosingShiftId] = useState<string | null>(null);
 
   const activeShifts = shifts.filter((s) => s.status === "active");
   const closedShifts = shifts.filter((s) => s.status === "closed");
@@ -43,6 +61,33 @@ export function ShiftManagement({
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     return `${hours}j ${minutes}m`;
+  };
+
+  const handleEndShift = async (shift: Shift) => {
+    try {
+      setClosingShiftId(shift.id);
+      const response = await apiRequest("GET", `/api/shifts/${shift.id}/summary`);
+      const data = await response.json();
+      setSelectedShift(data.shift);
+      setShiftSummary(data.summary);
+      setShowReportDialog(true);
+    } catch (error) {
+      toast({ title: "Error", description: "Gagal memuat summary shift", variant: "destructive" });
+    }
+  };
+
+  const handleConfirmCloseShift = async () => {
+    if (!closingShiftId) return;
+    try {
+      await apiRequest("PUT", `/api/shifts/${closingShiftId}/end`, { endingCash: 0 });
+      setShowReportDialog(false);
+      setClosingShiftId(null);
+      setShiftSummary(null);
+      toast({ title: "Shift ditutup", description: "Shift berhasil ditutup" });
+      onShiftEnded?.();
+    } catch (error) {
+      toast({ title: "Error", description: "Gagal menutup shift", variant: "destructive" });
+    }
   };
 
   return (
@@ -106,15 +151,24 @@ export function ShiftManagement({
                         <span>{shift.totalTransactions}</span>
                       </div>
                     </div>
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => handleViewDetails(shift)}
-                      data-testid={`button-view-shift-${shift.id}`}
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      Lihat Detail
-                    </Button>
+                    <div className="space-y-2">
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => handleViewDetails(shift)}
+                        data-testid={`button-view-shift-${shift.id}`}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        Lihat Detail
+                      </Button>
+                      <Button
+                        className="w-full bg-red-600 hover:bg-red-700"
+                        onClick={() => handleEndShift(shift)}
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Akhiri Shift
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
@@ -245,6 +299,19 @@ export function ShiftManagement({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Shift Close Report Dialog */}
+      <ShiftCloseReport
+        shift={selectedShift}
+        summary={shiftSummary}
+        open={showReportDialog}
+        onConfirm={handleConfirmCloseShift}
+        onCancel={() => {
+          setShowReportDialog(false);
+          setClosingShiftId(null);
+          setShiftSummary(null);
+        }}
+      />
     </div>
   );
 }

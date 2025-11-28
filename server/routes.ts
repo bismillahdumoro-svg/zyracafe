@@ -299,6 +299,53 @@ export async function registerRoutes(
     }
   });
 
+  // Get shift summary dengan breakdown billiard vs cafe
+  app.get("/api/shifts/:id/summary", async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const shift = await storage.getShift(id);
+      if (!shift) {
+        return res.status(404).json({ message: "Shift tidak ditemukan" });
+      }
+
+      const transactions = await storage.getTransactionsByShift(id);
+      const products = await storage.getAllProducts();
+      
+      let billiardIncome = 0;
+      let cafeIncome = 0;
+      let billiardCount = 0;
+      let cafeCount = 0;
+
+      for (const tx of transactions) {
+        const items = await storage.getTransactionItems(tx.id);
+        for (const item of items) {
+          const product = products.find(p => p.id === item.productId);
+          if (product?.name?.includes("MEJA")) {
+            billiardIncome += item.subtotal;
+            billiardCount++;
+          } else {
+            cafeIncome += item.subtotal;
+            cafeCount++;
+          }
+        }
+      }
+
+      res.json({
+        shift: { ...shift, cashierName: (await storage.getUser(shift.cashierId))?.name || "" },
+        summary: {
+          totalIncome: billiardIncome + cafeIncome,
+          billiardIncome,
+          billiardTransactions: billiardCount,
+          cafeIncome,
+          cafeTransactions: cafeCount,
+          totalTransactions: transactions.length,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Gagal mengambil summary shift" });
+    }
+  });
+
   app.put("/api/shifts/:id/end", async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
