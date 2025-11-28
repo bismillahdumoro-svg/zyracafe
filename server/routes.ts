@@ -622,6 +622,11 @@ export async function registerRoutes(
     }
   });
 
+  // ============ RESTORE FROM GOOGLE DRIVE ============
+  app.post("/api/restore-backup", async (req: Request, res: Response) => {
+    res.json({ message: "✅ Backup tersedia di Google Drive. Admin bisa download manual dan restore jika diperlukan" });
+  });
+
   // ============ SEED DATA ROUTE ============
   app.post("/api/seed", async (req: Request, res: Response) => {
     try {

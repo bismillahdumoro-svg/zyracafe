@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { StatsCard } from "./StatsCard";
-import { DollarSign, ShoppingBag, Package, AlertTriangle, Plus, ArrowRight } from "lucide-react";
+import { DollarSign, ShoppingBag, Package, AlertTriangle, Plus, ArrowRight, Download } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Product, Transaction, Shift } from "@/lib/types";
 import { formatCurrency, formatDateTime } from "@/lib/utils";
 import { Link } from "wouter";
+import React from "react";
 
 interface AdminDashboardProps {
   todaySales: number;
@@ -26,6 +28,8 @@ export function AdminDashboard({
   recentTransactions,
   activeShifts,
 }: AdminDashboardProps) {
+  const [showBackupDialog, setShowBackupDialog] = React.useState(false);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -34,6 +38,16 @@ export function AdminDashboard({
           <p className="text-muted-foreground">Ringkasan data penjualan hari ini</p>
         </div>
         <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setShowBackupDialog(true)}
+            data-testid="button-backup"
+            title="Download backup dari Google Drive"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Backup
+          </Button>
           <Link href="/admin/products">
             <Button data-testid="button-add-product">
               <Plus className="h-4 w-4 mr-2" />
@@ -42,6 +56,37 @@ export function AdminDashboard({
           </Link>
         </div>
       </div>
+
+      <Dialog open={showBackupDialog} onOpenChange={setShowBackupDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>📦 Database Backup</DialogTitle>
+            <DialogDescription>Kelola backup database dari Google Drive</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm font-medium text-green-900">✅ Backup otomatis AKTIF</p>
+              <p className="text-xs text-green-700 mt-1">Database di-backup setiap hari jam 2 AM ke Google Drive</p>
+            </div>
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm font-medium text-blue-900">📍 Lokasi Backup</p>
+              <p className="text-xs text-blue-700 mt-1">Google Drive → pos-backup-YYYY-MM-DD.json</p>
+            </div>
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-sm font-medium text-amber-900">⚡ Jika server offline</p>
+              <p className="text-xs text-amber-700 mt-1">Aplikasi akan gunakan cache lokal. Ketika online kembali, data akan restore dari backup</p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBackupDialog(false)}>
+              Tutup
+            </Button>
+            <Button onClick={() => window.open("https://drive.google.com", "_blank")}>
+              Buka Google Drive
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard

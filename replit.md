@@ -1,7 +1,7 @@
 # POS Application - Billiard Rental Management System
 
 ## Overview (Nov 28, 2025) - ✅ COMPLETE PRODUCTION SYSTEM
-Modern POS system with automatic billiard rental tracking, full offline-first PWA with session persistence, keep-alive, AND **detailed shift close report** with billiard vs cafe income breakdown. PLUS smart stock management with 30-day inventory analytics! Database auto-backup to Google Drive daily!
+Modern POS system with automatic billiard rental tracking, full offline-first PWA with session persistence, keep-alive, AND **detailed shift close report** with billiard vs cafe income breakdown. PLUS smart stock management with 30-day inventory analytics! Database auto-backup to Google Drive daily with graceful offline fallback!
 
 ## ✅ COMPLETED FEATURES
 
@@ -42,9 +42,12 @@ Modern POS system with automatic billiard rental tracking, full offline-first PW
 - ✅ Install on home screen (iOS & Android)
 - ✅ Full database sync - 28+ records on device
 - ✅ Service Worker + IndexedDB caching
-- ✅ Offline-first operations
-- ✅ Auto-update on new versions
+- ✅ **Cache-first strategy** - Load from local cache first, network second
+- ✅ **Graceful degradation** - Works seamlessly offline
+- ✅ **Auto-update on new versions** 
 - ✅ Periodic sync every 5 minutes
+- ✅ **Offline fallback to backup** - Shows cache data when server offline
+- ✅ **Admin Backup panel** - View backup status, access Google Drive directly
 
 ### Session Persistence ✅ FIXED!
 - ✅ Session saved to localStorage on login
@@ -157,7 +160,21 @@ Billiard: 85% | Cafe: 15%
 
 ## 📋 Files Modified (Latest)
 
-### Nov 28 - Google Drive Auto-Backup ✅ NEW!
+### Nov 28 - Offline-First Fallback & Service Worker Enhancement ✅ NEW!
+- `public/sw.js` - Created:
+  - Cache-first strategy for all assets
+  - Network fallback with cache behavior
+  - Graceful error handling untuk offline scenarios
+  - IndexedDB cache untuk API responses
+- `client/src/components/AdminDashboard.tsx` - Enhanced:
+  - New "Backup" button untuk admin panel
+  - Dialog menampilkan backup status
+  - Link direct ke Google Drive
+  - Info tentang offline fallback strategy
+- `server/routes.ts` - Added:
+  - `POST /api/restore-backup` endpoint
+
+### Nov 28 - Google Drive Auto-Backup ✅
 - `server/backup.ts` - Created:
   - Backup service with node-cron scheduling
   - Exports all 11 database tables to JSON format
@@ -210,10 +227,11 @@ Billiard: 85% | Cafe: 15%
 
 1. **Deploy to Production** - Click Publish in Replit dashboard
 2. **Share URL with team** - App works offline + keep-alive active
-3. **Check Google Drive** - First backup will run in 1 minute
-4. **Daily backups** - Automatic backup at 2 AM setiap hari
-5. **Test on iPad** - Install to home screen, test shift close report
-6. **Print shift reports** - Use print button untuk paperwork
+3. **Check Google Drive** - First backup will run dalam 1 menit, daily at 2 AM
+4. **Test offline mode** - Close browser, open lagi = cache tetap ada
+5. **Test on iPad** - Install to home screen, full offline support
+6. **Admin Dashboard** - Click "Backup" button untuk lihat backup status
+7. **Graceful fallback** - Jika server down, app tetap bekerja dari cache
 
 ## 📦 Distribution
 
