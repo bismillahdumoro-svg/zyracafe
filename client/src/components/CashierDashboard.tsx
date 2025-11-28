@@ -190,8 +190,8 @@ export function CashierDashboard({
     const billiardMap = new Map<string, { hours: number; hourlyRate: number; totalPrice: number }>();
     
     cart.forEach((item) => {
-      if (item.product.sku.startsWith("BLR")) {
-        const tableNumber = item.product.name.split("Meja ")[1]?.split(" ")[0] || item.product.name;
+      if (item.product.name.toUpperCase().includes("MEJA")) {
+        const tableNumber = item.product.name.split("MEJA ")[1]?.split(" ")[0] || item.product.name;
         const hoursPerUnit = 1;
         const totalHours = hoursPerUnit * item.quantity;
         
