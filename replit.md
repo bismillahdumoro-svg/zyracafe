@@ -2,38 +2,41 @@
 
 ## Overview
 
-A modern Point of Sale (POS) system built with React, Express, and PostgreSQL. The application provides comprehensive cashier and administrative functionality for retail operations, including transaction processing, inventory management, shift tracking, sales reporting, and **automatic billiard rental timer management with booking validation**. The system supports role-based access control with separate interfaces for cashiers and administrators.
+A modern Point of Sale (POS) system built with React, Express, and PostgreSQL. The application provides comprehensive cashier and administrative functionality for retail operations, including transaction processing, inventory management, shift tracking, sales reporting, automatic billiard rental timer management with booking validation, and extension/renewal products that extend active billiard rentals.
 
 ## Recent Changes (Nov 28, 2025)
+
+### Billiard Rental Extension System (NEW - Nov 28, 2025)
+- ✅ **Extension Products (EXT001-EXT007)**: Special products for extending active billiard rentals
+  - Located only in "Perpanjangan" category
+  - Always orderable (no "sedang disewa" restriction)
+  - EXT001 extends MEJA 1, EXT002 extends MEJA 2, etc.
+  - Upon successful checkout, automatically adds hours to matching billiard rental timer
+  - Updates remainingSeconds in real-time
 
 ### Billiard Rental Management System - Complete
 - ✅ **Fixed billiard product detection**: Changed from "BLR" SKU prefix to "MEJA" text in product name
 - ✅ **Implemented automatic rental tracking**: Upon checkout, billiard table rentals auto-create with timers
-- ✅ **Fixed timer countdown**: Real-time countdown persists across shifts using localStorage + optional database backup
-- ✅ **Fixed "Pas" (Exact Payment) button**: Auto-fills payment amount with cart total for faster checkout
-- ✅ **Fixed double-click product input issue**: Product name field now accepts single-click input
-- ✅ **Organized billiard display**: Tab "Sewa Billiard" shows meja 1-7 in consistent grid layout (2-3 columns)
-- ✅ **Added rental validation**: Meja that are currently in rental cannot be added to cart
-- ✅ **Fixed product sorting**: Halaman Produk displays meja 1-7 first in numeric order
+- ✅ **Fixed timer countdown**: Real-time countdown persists across shifts using localStorage
+- ✅ **Fixed "Pas" (Exact Payment) button**: Auto-fills payment amount with cart total
+- ✅ **Organized billiard display**: Tab "Sewa Billiard" shows meja 1-7 in consistent grid layout
+- ✅ **Added rental validation**: Meja in rental cannot be added (except EXT products for extension)
+- ✅ **Fixed product sorting**: Halaman Produk displays meja 1-7 first
 
 ### Category Management
 - ✅ **Added "Tambah Kategori" button** in Manajemen Produk admin panel
-- ✅ **Daftar Kategori section**: Shows all categories with delete (×) button
-- ✅ **Add Category dialog**: Form to input new category name with validation
-- ✅ **Delete Category**: Click × button to remove category from system
-- ✅ **Category filtering**: Still works in product filter and selection dropdowns
+- ✅ **Daftar Kategori section**: Shows all categories with delete button
+- ✅ **Category filtering**: Works in both Cashier and Admin views
 
-### Product Visibility Rules (NEW - Nov 28, 2025)
+### Product Visibility Rules
 - ✅ **Perpanjangan Products (EXT001-EXT007)**: Only visible when "Perpanjangan" category is selected
-  - Hidden from "Semua" (All) category view
-  - Only appear when filtering by "Perpanjangan" category
-  - Applies to both Cashier dashboard and Admin product management
-  - Implemented using SKU prefix matching (EXT*)
+- ✅ **Always Orderable**: EXT products can be ordered even when corresponding meja is "sedang disewa"
+- ✅ **Auto-Extension**: Upon checkout with EXT product, timer automatically extends by 1 hour per unit
 
-### Key Product Categories
-- **MEJA 1-7**: Billiard rentals (SKU M001-M007, Rp 20.000/jam)
-- **Perpanjangan**: Extension/renewal products (SKU EXT001-EXT007) - hidden from "Semua"
-- **Other categories**: Normal visibility in all views
+### Feature Workflow Example:
+1. Kasir sewa MEJA 1 (3 jam) → timer starts countdown
+2. Kasir order EXT001 (Perpanjangan MEJA 1) + 1 jam → bayar
+3. Upon successful checkout → MEJA 1 timer automatically adds 1 hour (3 hours + 1 hour = 4 hours remaining)
 
 ### Cashier Credentials
 - User: kasir1, Password: kasir123
@@ -50,57 +53,39 @@ Preferred communication style: Simple, everyday language.
 
 **Framework**: React with TypeScript using Vite as the build tool
 
-**UI Component System**: 
-- Built on shadcn/ui (Radix UI primitives)
-- Tailwind CSS with custom design tokens
-- Theme system supporting light/dark modes
-- Inter font family for optimal readability
-
 **State Management**:
 - TanStack Query (React Query) for server state management
 - Local React state for UI interactions
-- localStorage for billiard rental timers
-
-**Routing**: 
-- Wouter for client-side routing
-- Role-based route protection (admin vs cashier views)
-- Separate dashboard interfaces per user role
+- localStorage for billiard rental timers (with extension support)
 
 **Product Filtering**:
-- Category-based filtering in both Cashier and Admin views
-- Special visibility rules for EXT products (Perpanjangan only)
+- Category-based filtering with special visibility rules
+- EXT products (Perpanjangan) hidden from "Semua" view
 - Billiard products (MEJA) sorted numerically at top
 - Search functionality across product names and SKUs
 
-### Backend Architecture
+**Billiard Extension Logic**:
+- EXT001-7 detect corresponding MEJA number (EXT001 → MEJA 1)
+- On checkout with EXT product, find matching active rental
+- Add hours to remainingSeconds (1 hour = 3600 seconds)
+- Update hoursRented field to reflect total duration
+- Persist changes to localStorage
 
-**Server Framework**: Express.js with TypeScript running on Node.js
+### Backend Architecture
 
 **API Design**:
 - RESTful endpoints organized by resource type
 - Session-based authentication
 - Role-based authorization (admin/cashier)
-- Express middleware for JSON parsing and logging
 - Billiard rental endpoints: POST/GET /api/billiard-rentals
-- Category endpoints: POST/DELETE /api/categories, GET /api/categories
+- Category endpoints: POST/DELETE /api/categories
 
 ### Database Architecture
-
-**ORM**: Drizzle ORM with PostgreSQL dialect
-
-**Database Provider**: Neon serverless PostgreSQL
 
 **Schema Design**:
 - Users, Products, Categories, Shifts, Transactions
 - Transaction Items, Stock Adjustments, Expenses, Loans
-- Billiard_rentals table: Tracks table rentals with start time, duration, price, status
-
-**Key Relationships**:
-- Products → Categories (many-to-one)
-- Transactions → Shifts (many-to-one)
-- Transactions → Users (many-to-one)
-- Transaction Items → Products (many-to-one)
-- Billiard_rentals → Shifts (many-to-one)
+- Billiard_rentals: Tracks table rentals with start time, duration, price, status
 
 ## External Dependencies
 
@@ -110,7 +95,6 @@ Preferred communication style: Simple, everyday language.
 - @neondatabase/serverless: Neon PostgreSQL client
 - drizzle-orm: TypeScript ORM
 - drizzle-zod: Schema validation
-- ws: WebSocket implementation
 
 **Backend Framework**:
 - express: HTTP server framework
@@ -127,27 +111,6 @@ Preferred communication style: Simple, everyday language.
 - tailwindcss: Utility-first CSS framework
 - lucide-react: Icon library
 
-**Form Handling**:
-- react-hook-form: Form state management
-- @hookform/resolvers: Form validation
-- zod: Schema validation
-
 **Utilities**:
 - date-fns: Date formatting
-- clsx/tailwind-merge: CSS class merging
-- nanoid: Unique ID generation
-
-### Development Dependencies
-
-**Build Tools**:
-- vite: Frontend build tool
-- @vitejs/plugin-react: React support for Vite
-- esbuild: JavaScript bundler
-- tsx: TypeScript execution
-
-**TypeScript**:
-- typescript: Type system
-- @types/*: Type definitions
-
-**Replit Integration**:
-- @replit/vite-plugin-*: Development tooling
+- zod: Schema validation

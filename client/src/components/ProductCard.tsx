@@ -30,6 +30,10 @@ export function ProductCard({ product, onAddToCart, activeBilliardRentals = [] }
   const isBilliardProduct = product.name.toUpperCase().includes("MEJA");
   const tableNumber = isBilliardProduct ? product.name.split("MEJA ")[1]?.split(" ")[0]?.trim() : null;
   const isCurrentlyRented = !!(isBilliardProduct && tableNumber && activeBilliardRentals.some((r) => String(r.tableNumber).trim() === tableNumber));
+  
+  // EXT products are extension/renewal products - always orderable
+  const isExtensionProduct = product.sku.startsWith("EXT");
+  const canOrder = !isOutOfStock && (!isBilliardProduct || !isCurrentlyRented);
 
   return (
     <Card
@@ -73,14 +77,14 @@ export function ProductCard({ product, onAddToCart, activeBilliardRentals = [] }
         )}
         <Button
           className="w-full h-8 font-semibold text-xs mt-2 flex-shrink-0"
-          disabled={isOutOfStock || isCurrentlyRented}
+          disabled={!canOrder}
           onClick={(e) => {
             e.stopPropagation();
             onAddToCart(product);
           }}
           data-testid={`button-add-cart-${product.id}`}
         >
-          {isCurrentlyRented ? "Tidak Tersedia" : "Tambah"}
+          {isCurrentlyRented && !isExtensionProduct ? "Tidak Tersedia" : isOutOfStock ? "Habis" : "Tambah"}
         </Button>
       </CardContent>
     </Card>

@@ -201,6 +201,30 @@ export function CashierDashboard({
     // Auto-create billiard rentals from billiard products in cart
     const billiardMap = new Map<string, { hours: number; hourlyRate: number; totalPrice: number }>();
     
+    // Process extension products (EXT001-7) - add hours to existing rentals
+    cart.forEach((item) => {
+      if (item.product.sku.startsWith("EXT")) {
+        // EXT001 = MEJA 1, EXT002 = MEJA 2, etc.
+        const extNum = String(parseInt(item.product.sku.replace("EXT", "")) || "1");
+        const hoursPerUnit = 1;
+        const totalHours = hoursPerUnit * item.quantity;
+        
+        setBilliardRentals((prev) =>
+          prev.map((rental) => {
+            if (String(parseInt(rental.tableNumber) || rental.tableNumber) === extNum) {
+              return {
+                ...rental,
+                remainingSeconds: rental.remainingSeconds + totalHours * 3600,
+                hoursRented: rental.hoursRented + totalHours,
+              };
+            }
+            return rental;
+          })
+        );
+      }
+    });
+    
+    // Process new billiard rentals (MEJA products)
     cart.forEach((item) => {
       if (item.product.name.toUpperCase().includes("MEJA")) {
         const tableNumber = String(item.product.name.split("MEJA ")[1]?.split(" ")[0] || item.product.name).trim();
