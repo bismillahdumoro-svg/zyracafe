@@ -2,12 +2,12 @@
 
 ## Overview
 
-A modern Point of Sale (POS) system built with React, Express, and PostgreSQL. The application provides comprehensive cashier and administrative functionality for retail operations, including transaction processing, inventory management, shift tracking, sales reporting, and **automatic billiard rental timer management**. The system supports role-based access control with separate interfaces for cashiers and administrators, with features for product management, stock adjustments, shift management, and detailed sales analytics.
+A modern Point of Sale (POS) system built with React, Express, and PostgreSQL. The application provides comprehensive cashier and administrative functionality for retail operations, including transaction processing, inventory management, shift tracking, sales reporting, and **automatic billiard rental timer management with booking validation**. The system supports role-based access control with separate interfaces for cashiers and administrators.
 
 ## Recent Changes (Nov 28, 2025)
 
-### Billiard Rental Management System
-- ✅ **Fixed billiard product detection**: Changed from "BLR" SKU prefix to "MEJA" text in product name (actual SKUs are M001-M007)
+### Billiard Rental Management System - Complete
+- ✅ **Fixed billiard product detection**: Changed from "BLR" SKU prefix to "MEJA" text in product name
 - ✅ **Implemented automatic rental tracking**: Upon checkout, billiard table rentals auto-create with timers
 - ✅ **Fixed timer countdown**: Real-time countdown persists across shifts using localStorage + optional database backup
 - ✅ **Fixed "Pas" (Exact Payment) button**: Auto-fills payment amount with cart total for faster checkout
@@ -17,7 +17,12 @@ A modern Point of Sale (POS) system built with React, Express, and PostgreSQL. T
   - Available meja show green badge, active rentals show blue with countdown timer
   - Countdown displays HH:MM:SS format
   - Close button removes rental from active list
-- ✅ **Fixed product sorting**: Halaman Produk now displays meja 1-7 first in numeric order, followed by other products
+- ✅ **Fixed product sorting**: Halaman Produk displays meja 1-7 first in numeric order, followed by other products
+- ✅ **Added rental validation**: Meja that are currently in rental cannot be added to cart
+  - Product card shows "Sedang Disewa" badge in red
+  - Alert message "Meja masih dalam sewa" displayed on card
+  - Button changes to "Tidak Tersedia" and is disabled
+  - Prevents accidental double-booking of billiard tables
 
 ### Key Billiard Product Naming
 - Products named "MEJA 1", "MEJA 2", ..., "MEJA 7" are auto-detected as billiard rentals
@@ -41,15 +46,14 @@ Preferred communication style: Simple, everyday language.
 **Framework**: React with TypeScript using Vite as the build tool
 
 **UI Component System**: 
-- Built on shadcn/ui (Radix UI primitives) following Material Design principles adapted for productivity
-- Uses Tailwind CSS with custom design tokens for consistent spacing (2, 4, 6, 8 units)
-- Theme system supporting light/dark modes via context provider
-- Inter font family for optimal readability across all sizes
+- Built on shadcn/ui (Radix UI primitives)
+- Tailwind CSS with custom design tokens
+- Theme system supporting light/dark modes
+- Inter font family for optimal readability
 
 **State Management**:
-- TanStack Query (React Query) for server state management and caching
-- Local React state for UI interactions and form handling
-- Custom query client with credential-based API requests
+- TanStack Query (React Query) for server state management
+- Local React state for UI interactions
 - localStorage for billiard rental timers (persists across browser/shift changes)
 
 **Routing**: 
@@ -58,9 +62,8 @@ Preferred communication style: Simple, everyday language.
 - Separate dashboard interfaces per user role
 
 **Layout Pattern**:
-- Admin: Sidebar navigation with 3-4 column grid layouts for data density
-- Cashier: Two-column split interface (products 60% | cart 40%) optimized for transaction speed
-- Responsive grid systems using Tailwind's responsive prefixes
+- Admin: Sidebar navigation with grid layouts
+- Cashier: Two-column split interface (products 60% | cart 40%)
 - Billiard tab: 2-3 column grid for consistent meja 1-7 ordering
 
 ### Backend Architecture
@@ -69,93 +72,52 @@ Preferred communication style: Simple, everyday language.
 
 **API Design**:
 - RESTful endpoints organized by resource type
-- Session-based authentication without external auth providers
-- Simple role-based authorization (admin/cashier) via middleware
-- Express middleware for JSON parsing and request logging
+- Session-based authentication
+- Role-based authorization (admin/cashier)
+- Express middleware for JSON parsing and logging
 - Billiard rental endpoints: POST /api/billiard-rentals, GET /api/billiard-rentals
-
-**Development Tools**:
-- Vite integration for HMR and dev server
-- Custom logging middleware for request/response tracking
-- Runtime error overlay in development (Replit plugins)
 
 ### Database Architecture
 
 **ORM**: Drizzle ORM with PostgreSQL dialect
 
-**Database Provider**: Neon serverless PostgreSQL with WebSocket support
+**Database Provider**: Neon serverless PostgreSQL
 
 **Schema Design**:
-- Users table with role enum (admin, cashier)
-- Products with category relationships and stock tracking
-- Shifts for cashier session management (active/closed status)
-- Transactions with line items for detailed sales tracking
-- Stock adjustments for inventory change logging
-- Expenses and loans for financial tracking per shift
-- **Billiard_rentals table**: Tracks table rentals with start time, duration, price, and status
+- Users, Products, Categories, Shifts, Transactions
+- Transaction Items, Stock Adjustments, Expenses, Loans
+- **Billiard_rentals table**: Tracks table rentals with start time, duration, price, status
 
 **Key Relationships**:
 - Products → Categories (many-to-one)
 - Transactions → Shifts (many-to-one)
-- Transactions → Users (cashier, many-to-one)
+- Transactions → Users (many-to-one)
 - Transaction Items → Products (many-to-one)
-- Stock Adjustments → Products (many-to-one)
 - Billiard_rentals → Shifts (many-to-one)
-
-**Data Patterns**:
-- UUID primary keys generated via PostgreSQL
-- Timestamp tracking for shifts and transactions
-- Enums for status fields (shift status, payment method, user role)
-- Integer storage for currency (avoiding floating point)
-
-### Authentication & Authorization
-
-**Authentication**: Username/password with session tracking
-
-**Authorization Model**:
-- Two roles: admin and cashier
-- Route-level protection based on user role
-- Session state stored in request object
-- No external identity providers
-
-### Build & Deployment
-
-**Build Process**:
-- Custom build script using esbuild for server bundling
-- Vite for optimized client production builds
-- Selective dependency bundling to reduce syscalls (allowlist pattern)
-- Separate client and server build outputs
-
-**Production Configuration**:
-- Static file serving from compiled dist directory
-- SPA fallback routing for client-side routes
-- Environment-based configuration (NODE_ENV)
 
 ## External Dependencies
 
 ### Core Runtime Dependencies
 
 **Database**:
-- @neondatabase/serverless: Neon PostgreSQL client with WebSocket support
-- drizzle-orm: TypeScript ORM for type-safe database queries
-- drizzle-zod: Schema validation integration
-- ws: WebSocket implementation for Neon connection
+- @neondatabase/serverless: Neon PostgreSQL client
+- drizzle-orm: TypeScript ORM
+- drizzle-zod: Schema validation
+- ws: WebSocket implementation
 
 **Backend Framework**:
 - express: HTTP server framework
-- express-session: Session management middleware
+- express-session: Session management
 - connect-pg-simple: PostgreSQL session store
 
 **Frontend Framework**:
-- react: UI library
-- react-dom: DOM rendering
-- wouter: Lightweight routing
+- react, react-dom: UI library
+- wouter: Routing
 - @tanstack/react-query: Server state management
 
 **UI Components**:
-- @radix-ui/*: Headless UI primitives (20+ components)
+- @radix-ui/*: Headless UI primitives
 - tailwindcss: Utility-first CSS framework
-- class-variance-authority: Component variant management
 - lucide-react: Icon library
 
 **Form Handling**:
@@ -164,27 +126,21 @@ Preferred communication style: Simple, everyday language.
 - zod: Schema validation
 
 **Utilities**:
-- date-fns: Date formatting and manipulation
+- date-fns: Date formatting
 - clsx/tailwind-merge: CSS class merging
 - nanoid: Unique ID generation
 
 ### Development Dependencies
 
 **Build Tools**:
-- vite: Frontend build tool and dev server
+- vite: Frontend build tool
 - @vitejs/plugin-react: React support for Vite
-- esbuild: JavaScript bundler for server code
-- tsx: TypeScript execution for scripts
+- esbuild: JavaScript bundler
+- tsx: TypeScript execution
 
 **TypeScript**:
 - typescript: Type system
-- @types/*: Type definitions for dependencies
+- @types/*: Type definitions
 
 **Replit Integration**:
-- @replit/vite-plugin-*: Development tooling plugins
-
-### Third-Party Services
-
-**Database Hosting**: Neon Serverless PostgreSQL (required DATABASE_URL environment variable)
-
-**Font Delivery**: Google Fonts (Inter, DM Sans, Fira Code, Geist Mono, Architects Daughter)
+- @replit/vite-plugin-*: Development tooling

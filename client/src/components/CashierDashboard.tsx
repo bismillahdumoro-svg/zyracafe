@@ -497,6 +497,7 @@ export function CashierDashboard({
                           key={product.id}
                           product={product}
                           onAddToCart={handleAddToCart}
+                          activeBilliardRentals={billiardRentals}
                         />
                       ))
                   )}
