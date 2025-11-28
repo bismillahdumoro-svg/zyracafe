@@ -1,66 +1,96 @@
 # POS Application - Billiard Rental Management System
 
-## Overview (Nov 28, 2025)
-Modern POS system with automatic billiard rental tracking, timer management, and extension/renewal products that extend active billiard rentals in real-time.
+## Overview (Nov 28, 2025) - ✅ PWA ENABLED
+Modern POS system with automatic billiard rental tracking, timer management, extension/renewal products, and **offline-first Progressive Web App** capabilities.
 
-## ✅ Completed Features
+## ✅ COMPLETED FEATURES
 
-### Billiard Rental System
-- ✅ Automatic timer creation upon MEJA 1-7 purchase completion
+### Core POS System
+- ✅ Billiard rental (MEJA 1-7) with auto-timer creation on purchase
 - ✅ Real-time countdown (HH:MM:SS format) with localStorage persistence
-- ✅ Tab "Sewa Billiard" displays all active rentals in ordered grid
-- ✅ Active rentals show countdown timer, available meja show green badge
-- ✅ Meja cannot be double-booked - "Sedang Disewa" warning blocks cart
+- ✅ Extension products (EXT001-EXT007) always orderable, auto-extend timers
+- ✅ Extension tracking: Shows "Diperpanjang: [datetime] (+[jam])" when extended
+- ✅ Double-booking prevention with "Sedang Disewa" warnings
+- ✅ Category management (add/delete) with special "Perpanjangan" handling
+- ✅ Product visibility rules enforced at Cashier & Admin levels
 
-### Extension/Renewal Products (EXT001-EXT007)
-- ✅ **Only visible in "Perpanjangan" category** - hidden from "Semua" view to avoid confusion
-- ✅ **Always orderable** - no "sedang disewa" restriction (purpose: extend active rentals)
-- ✅ Mapping: EXT001→MEJA 1, EXT002→MEJA 2, ..., EXT007→MEJA 7
-- ✅ **Auto-extend on checkout**: Upon successful payment, adds hours to matching billiard timer
-- ✅ **Extension tracking**: Menu "Sewa Billiard" shows "Diperpanjang: [datetime] (+[jam] jam)" instead of start time for extended rentals
-- ✅ Updates remainingSeconds + hoursRented in real-time
+### Progressive Web App (PWA) - OFFLINE-FIRST
+- ✅ Install app on home screen (iOS & Android)
+- ✅ Offline support - works without internet connection
+- ✅ Service Worker caching strategy with Workbox
+- ✅ IndexedDB for local data persistence
+- ✅ Auto-update service worker when new version deployed
+- ✅ Network-first API caching (sync when online)
+- ✅ Manifest.json with app icons and metadata
+- ✅ Mobile-optimized with PWA shortcuts
 
-### Category Management
-- ✅ Add/Delete categories from admin panel with API integration
-- ✅ Filter products by category with special "Perpanjangan" category handling
-- ✅ Product visibility rules enforced at both Cashier & Admin levels
+## How to Use as PWA
+
+### On Mobile (iOS):
+1. Open app in Safari
+2. Tap **Share** button → **Add to Home Screen**
+3. App installs like native app - can use offline!
+
+### On Mobile (Android):
+1. Open app in Chrome/Firefox
+2. Tap menu → **Install app** (or use banner)
+3. App works offline with sync when connection returns
+
+### Desktop (Optional):
+1. Open app in Chrome
+2. Click **Install** button in address bar
+3. App opens in standalone window
+
+## Offline Features
+- ✅ Browse products & billiard tables offline
+- ✅ Create cart and checkout offline
+- ✅ Data stored in IndexedDB (local device)
+- ✅ Automatic sync when online
+- ✅ Timer countdown continues offline
+- ✅ No data loss - persists between app sessions
 
 ## Testing Steps for All Features
 
-### 1. Test Perpanjangan Display
+### 1. Test PWA Installation
 ```
-1. Login: kasir1 / kasir123
-2. Go to "Manajemen Billiard" (Admin/Billiard tab)
-3. Verify "Sewa Billiard Aktif" table shows:
-   - Initial rental: Mulai: 29 Nov 2025, 02:10 (start time)
-   - After extension: Diperpanjang: 29 Nov 2025, 02:15 (+1 jam) (green text, extension info)
+Mobile (Android):
+1. Open app in Chrome
+2. Tap menu → "Install app" → Install
+3. App icon appears on home screen
+4. Tap icon to launch as standalone app
+
+iOS:
+1. Open in Safari
+2. Tap Share → Add to Home Screen
+3. Name it "POS Billiard"
+4. Icon appears on home screen
 ```
 
-### 2. Test Extension Products (EXT)
+### 2. Test Offline Mode
 ```
-1. Login: kasir1 / kasir123
-2. Buka halaman Produk → Pilih kategori "Perpanjangan"
-3. Verify: Hanya EXT001-EXT007 tampil (no MEJA 1-7)
-4. Click "Tambah" EXT005 → Bisa ditambah ke cart (walau MEJA 5 sedang disewa)
-5. Bayar → MEJA 5 timer otomatis +1 jam extend
-6. Back to Billiard menu → Lihat info "Diperpanjang" muncul di column
+1. Install PWA on mobile
+2. Turn off internet (Airplane mode or WiFi/Data off)
+3. Open app from home screen
+4. All pages load offline
+5. Can browse products & billiard tables
+6. Can create cart & checkout
+7. Data persists in IndexedDB
+8. Turn internet back on → Auto-sync
 ```
 
-### 3. Test Billiard Rental Flow
+### 3. Test Perpanjangan Display
 ```
-1. Add EXT products (EXT001-EXT007) dengan stock > 0
-2. Login kasir, add MEJA 1 to cart
-3. Checkout & bayar
-4. Sisa Waktu countdown dimulai
-5. Order EXT001 (perpanjangan MEJA 1)
-6. Checkout & bayar
-7. Sisa Waktu MEJA 1 naik +1 jam
+1. Login: kasir1 / kasir123
+2. Order MEJA 5 → Checkout & Bayar
+3. Buka Produk → Filter "Perpanjangan"
+4. Order EXT005 → Checkout & Bayar
+5. Menu "Sewa Billiard" → Info berubah ke "Diperpanjang: ... (+1 jam)" hijau
 ```
 
 ## Product Categories
-- **Semua**: All products except EXT (Perpanjangan) - mixed products
-- **Makanan, Minuman, Snack, Rokok, Lainnya**: Regular products 
-- **Perpanjangan**: **ONLY** EXT001-EXT007 extension products
+- **Semua**: All products except EXT (Perpanjangan)
+- **Makanan, Minuman, Snack, Rokok, Lainnya**: Regular products
+- **Perpanjangan**: ONLY EXT001-EXT007 extension products
 
 ## Credentials
 - Kasir: kasir1 / kasir123 or kasir2 / kasir123
@@ -70,9 +100,10 @@ Modern POS system with automatic billiard rental tracking, timer management, and
 
 ### Frontend
 - React + TypeScript + Vite
-- State: TanStack Query + localStorage (billiard timers)
-- Special product visibility rules per category
+- PWA with Service Worker + Workbox
+- State: TanStack Query + localStorage + IndexedDB
 - Real-time timer countdown with extension tracking
+- Offline-first architecture
 
 ### Backend
 - Express.js + TypeScript
@@ -84,8 +115,23 @@ Modern POS system with automatic billiard rental tracking, timer management, and
 - PostgreSQL (Neon) via Drizzle ORM
 - Tables: Users, Products, Categories, Shifts, Transactions, Billiard_rentals, Billiard_tables
 
+### PWA Configuration
+- **Service Worker**: Vite PWA with Workbox
+- **Caching Strategy**: NetworkFirst for API, StaleWhileRevalidate for assets
+- **Local Storage**: IndexedDB for data persistence
+- **Manifest**: app-256px.png, icons, shortcuts, theme colors
+- **Auto-Update**: Service Worker auto-updates when new version deployed
+
 ## Key Design Decisions
-- Extension products (EXT) use numeric extraction: EXT001 = MEJA 1, etc.
+- Extension products (EXT) use numeric extraction: EXT001 = MEJA 1
 - Billiard products detected by name containing "MEJA"
-- Perpanjangan display: Shows "Diperpanjang: [datetime] (+[jam])" when extension happens
-- Extension count tracked per rental for transparency
+- Perpanjangan display: Shows "Diperpanjang: [datetime] (+[jam])" when extended
+- PWA offline-first: All data cached locally, syncs when online
+- Service Worker auto-update: New versions deployed automatically
+
+## Files Modified for PWA
+- `vite.config.ts` - Added VitePWA plugin with Workbox
+- `client/index.html` - Added manifest link & PWA meta tags
+- `client/src/main.tsx` - IndexedDB initialization
+- `client/src/lib/db.ts` - New IndexedDB helper functions
+- `public/manifest.json` - PWA app manifest & metadata
