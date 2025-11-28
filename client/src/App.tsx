@@ -258,6 +258,42 @@ function AppContent() {
     deleteProductMutation.mutate(id);
   };
 
+  const addCategoryMutation = useMutation({
+    mutationFn: async (name: string) => {
+      const res = await apiRequest("POST", "/api/categories", { name });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      toast({ title: "Kategori ditambahkan", description: data.name });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Gagal menambahkan kategori", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const handleAddCategory = (name: string) => {
+    addCategoryMutation.mutate(name);
+  };
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/categories/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({ title: "Kategori dihapus" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Gagal menghapus kategori", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const handleDeleteCategory = (id: string) => {
+    deleteCategoryMutation.mutate(id);
+  };
+
   const adjustStockMutation = useMutation({
     mutationFn: async ({ productId, adjustment, reason }: { productId: string; adjustment: number; reason: string }) => {
       const res = await apiRequest("POST", "/api/stock-adjustments", {
@@ -496,6 +532,8 @@ function AppContent() {
                   onAddProduct={handleAddProduct}
                   onUpdateProduct={handleUpdateProduct}
                   onDeleteProduct={handleDeleteProduct}
+                  onAddCategory={handleAddCategory}
+                  onDeleteCategory={handleDeleteCategory}
                 />
               </Route>
               <Route path="/admin/stock">

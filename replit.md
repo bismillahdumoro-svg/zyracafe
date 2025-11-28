@@ -13,16 +13,16 @@ A modern Point of Sale (POS) system built with React, Express, and PostgreSQL. T
 - ✅ **Fixed "Pas" (Exact Payment) button**: Auto-fills payment amount with cart total for faster checkout
 - ✅ **Fixed double-click product input issue**: Product name field now accepts single-click input
 - ✅ **Organized billiard display**: Tab "Sewa Billiard" shows meja 1-7 in consistent grid layout (2-3 columns)
-  - Grid always displays meja 1-7 in order (1,2,3 | 4,5,6 | 7)
-  - Available meja show green badge, active rentals show blue with countdown timer
-  - Countdown displays HH:MM:SS format
-  - Close button removes rental from active list
-- ✅ **Fixed product sorting**: Halaman Produk displays meja 1-7 first in numeric order, followed by other products
 - ✅ **Added rental validation**: Meja that are currently in rental cannot be added to cart
-  - Product card shows "Sedang Disewa" badge in red
-  - Alert message "Meja masih dalam sewa" displayed on card
-  - Button changes to "Tidak Tersedia" and is disabled
-  - Prevents accidental double-booking of billiard tables
+- ✅ **Fixed product sorting**: Halaman Produk displays meja 1-7 first in numeric order
+
+### Category Management (NEW - Nov 28, 2025)
+- ✅ **Added "Tambah Kategori" button** in Manajemen Produk admin panel
+- ✅ **Daftar Kategori section**: Shows all categories with delete (×) button
+- ✅ **Add Category dialog**: Form to input new category name with validation
+- ✅ **Delete Category**: Click × button to remove category from system
+- ✅ **Category filtering**: Still works in product filter and selection dropdowns
+- ✅ **Full API integration**: POST /api/categories and DELETE /api/categories/:id endpoints wired up
 
 ### Key Billiard Product Naming
 - Products named "MEJA 1", "MEJA 2", ..., "MEJA 7" are auto-detected as billiard rentals
@@ -54,7 +54,7 @@ Preferred communication style: Simple, everyday language.
 **State Management**:
 - TanStack Query (React Query) for server state management
 - Local React state for UI interactions
-- localStorage for billiard rental timers (persists across browser/shift changes)
+- localStorage for billiard rental timers
 
 **Routing**: 
 - Wouter for client-side routing
@@ -75,7 +75,8 @@ Preferred communication style: Simple, everyday language.
 - Session-based authentication
 - Role-based authorization (admin/cashier)
 - Express middleware for JSON parsing and logging
-- Billiard rental endpoints: POST /api/billiard-rentals, GET /api/billiard-rentals
+- Billiard rental endpoints: POST/GET /api/billiard-rentals
+- Category endpoints: POST/DELETE /api/categories, GET /api/categories
 
 ### Database Architecture
 
@@ -86,7 +87,7 @@ Preferred communication style: Simple, everyday language.
 **Schema Design**:
 - Users, Products, Categories, Shifts, Transactions
 - Transaction Items, Stock Adjustments, Expenses, Loans
-- **Billiard_rentals table**: Tracks table rentals with start time, duration, price, status
+- Billiard_rentals table: Tracks table rentals with start time, duration, price, status
 
 **Key Relationships**:
 - Products → Categories (many-to-one)

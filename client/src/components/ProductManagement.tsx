@@ -18,6 +18,8 @@ interface ProductManagementProps {
   onAddProduct: (product: Omit<Product, "id">) => void;
   onUpdateProduct: (id: string, product: Partial<Product>) => void;
   onDeleteProduct: (id: string) => void;
+  onAddCategory?: (name: string) => void;
+  onDeleteCategory?: (id: string) => void;
 }
 
 export function ProductManagement({
@@ -26,12 +28,17 @@ export function ProductManagement({
   onAddProduct,
   onUpdateProduct,
   onDeleteProduct,
+  onAddCategory,
+  onDeleteCategory,
 }: ProductManagementProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showAddCategoryDialog, setShowAddCategoryDialog] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [selectedCategory_todelete, setSelectedCategory_todelete] = useState<Category | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState({
     name: "",
@@ -50,6 +57,21 @@ export function ProductManagement({
 
   const resetForm = () => {
     setFormData({ name: "", sku: "", price: "", stock: "", categoryId: "" });
+  };
+
+  const handleDelete_category = () => {
+    if (selectedCategory_todelete && onDeleteCategory) {
+      onDeleteCategory(selectedCategory_todelete.id);
+      setSelectedCategory_todelete(null);
+    }
+  };
+
+  const handleAddCategorySubmit = () => {
+    if (newCategoryName.trim() && onAddCategory) {
+      onAddCategory(newCategoryName);
+      setNewCategoryName("");
+      setShowAddCategoryDialog(false);
+    }
   };
 
   const handleAdd = () => {
@@ -183,11 +205,42 @@ export function ProductManagement({
           <h1 className="text-2xl font-semibold">Manajemen Produk</h1>
           <p className="text-muted-foreground">Kelola daftar produk dan kategori</p>
         </div>
-        <Button onClick={() => { resetForm(); setShowAddDialog(true); }} data-testid="button-add-product">
-          <Plus className="h-4 w-4 mr-2" />
-          Tambah Produk
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={() => setShowAddCategoryDialog(true)} variant="outline" data-testid="button-manage-category">
+            <Plus className="h-4 w-4 mr-2" />
+            Tambah Kategori
+          </Button>
+          <Button onClick={() => { resetForm(); setShowAddDialog(true); }} data-testid="button-add-product">
+            <Plus className="h-4 w-4 mr-2" />
+            Tambah Produk
+          </Button>
+        </div>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Daftar Kategori</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((cat) => (
+              <Badge key={cat.id} variant="outline" className="text-xs py-1 px-2 flex items-center gap-2">
+                {cat.name}
+                <button
+                  onClick={() => {
+                    setSelectedCategory_todelete(cat);
+                    handleDelete_category();
+                  }}
+                  className="ml-1 text-destructive hover:text-destructive/70"
+                  data-testid={`button-delete-category-${cat.id}`}
+                >
+                  ×
+                </button>
+              </Badge>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader className="pb-4">
@@ -330,6 +383,38 @@ export function ProductManagement({
             </Button>
             <Button variant="destructive" onClick={handleDelete} data-testid="button-confirm-delete">
               Hapus
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showAddCategoryDialog} onOpenChange={setShowAddCategoryDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Tambah Kategori Baru</DialogTitle>
+            <DialogDescription>
+              Masukkan nama kategori baru
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="category-name">Nama Kategori</Label>
+              <Input
+                id="category-name"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                placeholder="Masukkan nama kategori"
+                data-testid="input-category-name"
+                autoComplete="off"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddCategoryDialog(false)}>
+              Batal
+            </Button>
+            <Button onClick={handleAddCategorySubmit} data-testid="button-save-category">
+              Tambah
             </Button>
           </DialogFooter>
         </DialogContent>
