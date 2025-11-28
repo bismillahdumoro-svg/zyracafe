@@ -227,6 +227,23 @@ export function CashierDashboard({
           remainingSeconds: totalSeconds,
         },
       ]);
+      
+      // Save to database
+      if (currentShift?.id) {
+        fetch('/api/billiard-rentals', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            shiftId: currentShift.id,
+            tableNumber,
+            hoursRented: data.hours,
+            hourlyRate: data.hourlyRate,
+            totalPrice: data.totalPrice,
+            endTime: null,
+            status: 'active'
+          })
+        }).catch(console.error);
+      }
     });
     
     onCheckout(cart, paymentAmount, paymentMethod, customerName);

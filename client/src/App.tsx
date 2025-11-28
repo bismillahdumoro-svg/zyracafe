@@ -64,6 +64,12 @@ function AppContent() {
     enabled: !!currentUser,
   });
 
+  const { data: billiardRentals = [] } = useQuery<BilliardRental[]>({
+    queryKey: ["/api/billiard-rentals/active"],
+    enabled: !!currentUser,
+    refetchInterval: 5000,
+  });
+
   const loginMutation = useMutation({
     mutationFn: async ({ username, password }: { username: string; password: string }) => {
       const res = await apiRequest("POST", "/api/auth/login", { username, password });
@@ -513,6 +519,7 @@ function AppContent() {
                   onAddTable={() => {}}
                   onUpdateTable={() => {}}
                   onDeleteTable={() => {}}
+                  activeRentals={billiardRentals}
                 />
               </Route>
               <Route path="/admin/shifts">

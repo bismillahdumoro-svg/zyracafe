@@ -14,6 +14,7 @@ interface BilliardManagementProps {
   onAddTable: (data: { tableNumber: string; hourlyRate: number }) => void;
   onUpdateTable: (id: string, data: { tableNumber: string; hourlyRate: number }) => void;
   onDeleteTable: (id: string) => void;
+  activeRentals?: any[];
 }
 
 export function BilliardManagement({
