@@ -1,7 +1,7 @@
 # POS Application - Billiard Rental Management System
 
 ## Overview (Nov 28, 2025) - ✅ COMPLETE PRODUCTION SYSTEM
-Modern POS system with automatic billiard rental tracking, full offline-first PWA with session persistence, keep-alive, AND **detailed shift close report** with billiard vs cafe income breakdown. PLUS smart stock management with 30-day inventory analytics!
+Modern POS system with automatic billiard rental tracking, full offline-first PWA with session persistence, keep-alive, AND **detailed shift close report** with billiard vs cafe income breakdown. PLUS smart stock management with 30-day inventory analytics! Database auto-backup to Google Drive daily!
 
 ## ✅ COMPLETED FEATURES
 
@@ -59,7 +59,14 @@ Modern POS system with automatic billiard rental tracking, full offline-first PW
 - ✅ Keeps temporary URL active 24/7
 - ✅ Prevents idle timeout
 
-### Stock Management & Analytics ✅ NEW!
+### Google Drive Auto-Backup ✅ NEW!
+- ✅ **Daily automated backup** - Runs at 2 AM every day
+- ✅ **Full database export** - All 11 tables: users, products, categories, shifts, transactions, stock adjustments, expenses, loans, billiard rentals, billiard tables
+- ✅ **Google Drive integration** - Automatically uploads JSON backup files
+- ✅ **First backup on startup** - Runs 1 minute after server starts
+- ✅ **Easy restore** - Download JSON backup anytime and restore data if needed
+
+### Stock Management & Analytics ✅
 - ✅ **Filter Gudang**: Exclude billiard tables (MEJA), esbatu, esteh, kopi cangkir from warehouse valuation
 - ✅ **Informasi Penambahan Stok**: 30-day rolling analytics tab
   - Total unit ditambahkan dalam 1 bulan
@@ -150,7 +157,21 @@ Billiard: 85% | Cafe: 15%
 
 ## 📋 Files Modified (Latest)
 
-### Nov 28 - Stock Management Analytics ✅ NEW!
+### Nov 28 - Google Drive Auto-Backup ✅ NEW!
+- `server/backup.ts` - Created:
+  - Backup service with node-cron scheduling
+  - Exports all 11 database tables to JSON format
+  - Google Drive API integration for automatic upload
+  - Runs daily at 2 AM + 1 minute after startup
+  - Error handling dengan clear logging
+- `server/index.ts` - Modified:
+  - Import dan initialize backup schedule
+  - Added: `import { initializeBackupSchedule } from "./backup";`
+  - Call: `initializeBackupSchedule();` during server startup
+- `package.json` - Added:
+  - `node-cron` dependency for task scheduling
+
+### Nov 28 - Stock Management Analytics ✅
 - `client/src/components/StockManagement.tsx` - Added:
   - New tab: "Informasi Penambahan Stok" 
   - Filter calculation for last 30 days additions
@@ -189,8 +210,10 @@ Billiard: 85% | Cafe: 15%
 
 1. **Deploy to Production** - Click Publish in Replit dashboard
 2. **Share URL with team** - App works offline + keep-alive active
-3. **Test on iPad** - Install to home screen, test shift close report
-4. **Print shift reports** - Use print button untuk paperwork
+3. **Check Google Drive** - First backup will run in 1 minute
+4. **Daily backups** - Automatic backup at 2 AM setiap hari
+5. **Test on iPad** - Install to home screen, test shift close report
+6. **Print shift reports** - Use print button untuk paperwork
 
 ## 📦 Distribution
 
@@ -209,3 +232,6 @@ Billiard: 85% | Cafe: 15%
 - ✅ Session persistence (tetap login saat app ditutup)
 - ✅ Static build ready untuk distribusi
 - ✅ WhatsApp share + Print functionality
+- ✅ **Google Drive auto-backup harian** (new!)
+- ✅ Stock management dengan filter gudang
+- ✅ Informasi penambahan stok 30 hari terakhir
