@@ -266,7 +266,9 @@ Click "Publish" di Replit dashboard
 ✅ Auto-scaling
 ✅ Free tier: 28 instance-hours/day
 ✅ Backups tetap running
-ℹ️ Lihat: DEPLOY_SIMPLE.md (paling mudah) atau DEPLOY_VISUAL_GUIDE.md (step-by-step)
+ℹ️ Pilih sesuai OS:
+   - Windows: DEPLOY_WINDOWS.md (+ DEPLOY_WINDOWS_QUICK.txt)
+   - Mac/Linux: DEPLOY_SIMPLE.md (+ DEPLOY_VISUAL_GUIDE.md)
 ```
 
 ### Option 3: Render / Railway (EASY ALTERNATIVE)

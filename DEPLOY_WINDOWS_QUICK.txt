@@ -1,0 +1,44 @@
+═══════════════════════════════════════════════════════════════
+🪟 WINDOWS DEPLOY QUICK GUIDE
+═══════════════════════════════════════════════════════════════
+
+1️⃣ DOWNLOAD & INSTALL
+   ➜ https://dl.google.com/dl/cloudsdk/channels/rapid/GoogleCloudSDKInstaller.exe
+   ➜ Double-click → Next → I Agree → Install
+   ➜ Restart Command Prompt
+
+2️⃣ TEST
+   ➜ Command Prompt: gcloud --version
+
+3️⃣ LOGIN
+   ➜ gcloud auth login
+   ➜ Browser: pick email → Allow
+
+4️⃣ CREATE PROJECT
+   ➜ https://console.cloud.google.com
+   ➜ NEW PROJECT → name: pos-billiard-app → CREATE
+   ➜ COPY PROJECT ID (format: pos-billiard-app-XXXXX)
+
+5️⃣ SET PROJECT
+   ➜ gcloud config set project pos-billiard-app-XXXXX
+   ➜ gcloud config list (verify)
+
+6️⃣ BUILD
+   ➜ npm run build
+   ➜ Wait 1-2 min
+
+7️⃣ DEPLOY
+   ➜ gcloud app deploy app.yaml --no-promote
+   ➜ When asked "Do you want to continue?" → Y + Enter
+   ➜ Wait 2-3 min
+
+8️⃣ GET URL
+   ➜ gcloud app describe
+   ➜ Find "default_hostname"
+   ➜ URL: https://pos-billiard-app-XXXXX.appspot.com
+
+✅ DONE! Share URL to team!
+
+═══════════════════════════════════════════════════════════════
+File: DEPLOY_WINDOWS.md (untuk detail lengkap)
+═══════════════════════════════════════════════════════════════
