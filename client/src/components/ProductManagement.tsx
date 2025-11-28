@@ -51,6 +51,13 @@ export function ProductManagement({
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.sku.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Hide EXT products (perpanjangan) from "all" category view
+    const isExtProduct = product.sku.startsWith("EXT");
+    if (selectedCategory === "all" && isExtProduct) {
+      return false;
+    }
+    
     const matchesCategory = selectedCategory === "all" || product.categoryId === selectedCategory;
     return matchesSearch && matchesCategory;
   });

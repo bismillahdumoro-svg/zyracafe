@@ -16,19 +16,24 @@ A modern Point of Sale (POS) system built with React, Express, and PostgreSQL. T
 - ✅ **Added rental validation**: Meja that are currently in rental cannot be added to cart
 - ✅ **Fixed product sorting**: Halaman Produk displays meja 1-7 first in numeric order
 
-### Category Management (NEW - Nov 28, 2025)
+### Category Management
 - ✅ **Added "Tambah Kategori" button** in Manajemen Produk admin panel
 - ✅ **Daftar Kategori section**: Shows all categories with delete (×) button
 - ✅ **Add Category dialog**: Form to input new category name with validation
 - ✅ **Delete Category**: Click × button to remove category from system
 - ✅ **Category filtering**: Still works in product filter and selection dropdowns
-- ✅ **Full API integration**: POST /api/categories and DELETE /api/categories/:id endpoints wired up
 
-### Key Billiard Product Naming
-- Products named "MEJA 1", "MEJA 2", ..., "MEJA 7" are auto-detected as billiard rentals
-- SKUs: M001, M002, M003, M004, M005, M006, M007
-- Price: Rp 20.000 per jam
-- Upon purchase, rental records created with start time and countdown timer
+### Product Visibility Rules (NEW - Nov 28, 2025)
+- ✅ **Perpanjangan Products (EXT001-EXT007)**: Only visible when "Perpanjangan" category is selected
+  - Hidden from "Semua" (All) category view
+  - Only appear when filtering by "Perpanjangan" category
+  - Applies to both Cashier dashboard and Admin product management
+  - Implemented using SKU prefix matching (EXT*)
+
+### Key Product Categories
+- **MEJA 1-7**: Billiard rentals (SKU M001-M007, Rp 20.000/jam)
+- **Perpanjangan**: Extension/renewal products (SKU EXT001-EXT007) - hidden from "Semua"
+- **Other categories**: Normal visibility in all views
 
 ### Cashier Credentials
 - User: kasir1, Password: kasir123
@@ -61,10 +66,11 @@ Preferred communication style: Simple, everyday language.
 - Role-based route protection (admin vs cashier views)
 - Separate dashboard interfaces per user role
 
-**Layout Pattern**:
-- Admin: Sidebar navigation with grid layouts
-- Cashier: Two-column split interface (products 60% | cart 40%)
-- Billiard tab: 2-3 column grid for consistent meja 1-7 ordering
+**Product Filtering**:
+- Category-based filtering in both Cashier and Admin views
+- Special visibility rules for EXT products (Perpanjangan only)
+- Billiard products (MEJA) sorted numerically at top
+- Search functionality across product names and SKUs
 
 ### Backend Architecture
 
