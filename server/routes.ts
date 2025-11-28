@@ -299,7 +299,7 @@ export async function registerRoutes(
     }
   });
 
-  // Get shift summary dengan breakdown billiard vs cafe
+  // Get shift summary dengan breakdown billiard vs cafe + expenses
   app.get("/api/shifts/:id/summary", async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
@@ -309,12 +309,14 @@ export async function registerRoutes(
       }
 
       const transactions = await storage.getTransactionsByShift(id);
+      const loans = await storage.getLoansByShift(id);
       const products = await storage.getAllProducts();
       
       let billiardIncome = 0;
       let cafeIncome = 0;
       let billiardCount = 0;
       let cafeCount = 0;
+      let totalExpenses = 0;
 
       for (const tx of transactions) {
         const items = await storage.getTransactionItems(tx.id);
@@ -330,15 +332,25 @@ export async function registerRoutes(
         }
       }
 
+      for (const loan of loans) {
+        totalExpenses += loan.amount;
+      }
+
+      const totalIncome = billiardIncome + cafeIncome;
+      const finalTotal = totalIncome - totalExpenses;
+
       res.json({
         shift: { ...shift, cashierName: (await storage.getUser(shift.cashierId))?.name || "" },
         summary: {
-          totalIncome: billiardIncome + cafeIncome,
+          totalIncome,
           billiardIncome,
           billiardTransactions: billiardCount,
           cafeIncome,
           cafeTransactions: cafeCount,
           totalTransactions: transactions.length,
+          expenses: loans.map(l => ({ description: l.description, amount: l.amount, recipientName: l.recipientName })),
+          totalExpenses,
+          finalTotal,
         },
       });
     } catch (error) {

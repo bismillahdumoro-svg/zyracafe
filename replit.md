@@ -54,41 +54,46 @@ Modern POS system with automatic billiard rental tracking, full offline-first PW
 
 ### When Kasir Ends Shift:
 
-1. **Click "Akhiri Shift" button** → Beautiful report dialog opens
-2. **See detailed breakdown:**
-   - Pendapatan Sewa Billiard (Billiard income)
-   - Pendapatan Cafe/Produk (Cafe/product income)
-   - Total income with percentage split
-   - Transaction counts for each
+1. **Click "Akhiri Shift" button** → Beautiful detailed report dialog opens
+2. **See complete breakdown:**
+   - ✅ Pendapatan Sewa Billiard (Billiard income dengan jumlah transaksi)
+   - ✅ Pendapatan Cafe/Produk (Cafe/product income dengan jumlah transaksi)
+   - ✅ Total Penjualan gabungan
+   - ✅ **Pengeluaran detail** - Semua bon/cashbon listed per orang dengan amount
+   - ✅ **TOTAL AKHIR** - Pendapatan setelah dikurangi pengeluaran (bold highlight)
+   - ✅ Percentage breakdown billiard vs cafe
 
-3. **Print or confirm close**
-   - Print button untuk receipt
-   - Confirm button untuk tutup shift
-   - Back button kalau belum siap
+3. **Share or Print**
+   - **WhatsApp button** - Generate laporan text dan share langsung ke WhatsApp
+   - **Print button** - Print receipt untuk arsip
+   - Back button jika belum siap
+   - Confirm button untuk finalisasi close
 
 ### Example Report:
 
 ```
-Rekap Shift - Kasir Satu
-────────────────────────
-Waktu Mulai: 28 Nov 2025, 19:50
-Durasi: 1j 8m
-────────────────────────
+📋 REKAP SHIFT - Kasir Satu
+════════════════════════════
 
-💰 Pendapatan Sewa Billiard
-   Total: Rp 340.000
-   Transaksi: 17
+💚 PENJUALAN SEWA BILLIARD:
+   Rp 340.000 (17 transaksi)
 
-💰 Pendapatan Cafe/Produk
-   Total: Rp 60.000
-   Transaksi: 8
+🧡 PENJUALAN CAFE/PRODUK:
+   Rp 60.000 (8 transaksi)
 
-════════════════════════
-TOTAL PENDAPATAN: Rp 400.000
+📊 TOTAL PENJUALAN:
+   Rp 400.000
 
-Billiard: 85%
-Cafe: 15%
-════════════════════════
+🔴 PENGELUARAN:
+   Bon (Hanif): Rp 50.000
+   ─────────────────────────
+   Total Pengeluaran: Rp 50.000
+
+✅ TOTAL AKHIR (Pendapatan - Pengeluaran):
+════════════════════════════
+   Rp 350.000
+════════════════════════════
+Billiard: 85% | Cafe: 15%
 ```
 
 ## 🔐 Credentials
